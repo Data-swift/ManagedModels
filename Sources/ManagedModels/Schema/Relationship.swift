@@ -11,30 +11,7 @@ public extension Schema {
    * A subclass of `NSRelationshipDescription` that tracks a few more schema
    * properties for ManagedModels.
    */
-  final class Relationship: CoreData.NSRelationshipDescription, SchemaProperty {
-    
-    public var keypath        : AnyKeyPath?
-    public var inverseKeyPath : AnyKeyPath?
-    public var valueType      : Any.Type = Any.self
-
-    final override public var inverseName: String? {
-      set {
-        guard _inverseName != newValue else { return }
-        _inverseName = newValue
-      }
-      get { _inverseName }
-    }
-    private var _inverseName : String?
-
-    final override public var destination: String {
-      set {
-        guard _destination != newValue else { return }
-        _destination = newValue
-      }
-      get { _destination }
-    }
-    private var _destination = ""
-
+  final class Relationship: CoreData.NSRelationshipDescription {
     
     override public var isToMany: Bool {
       if let _isToOneRelationship { return !_isToOneRelationship }
@@ -92,8 +69,8 @@ public extension Schema {
       keypath              = other.keypath
       inverseKeyPath       = other.inverseKeyPath
       valueType            = other.valueType
-      _inverseName         = other.inverseName
-      _destination         = other.destination
+      inverseName          = other.inverseName
+      destination          = other.destination
       if other.isUnique { isUnique = true }
       _isToOneRelationship = other.isToOneRelationship // TBD
     }
@@ -104,7 +81,6 @@ public extension Schema {
       // TBD: unclear whether this is good enough?
       Relationship(self)
     }
-    func internalCopy() -> Relationship { Relationship(self) }
   }
 }
 
