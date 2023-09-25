@@ -35,12 +35,6 @@ public extension Schema {
     }
     private var _destination = ""
 
-    final override public var isUnique: Bool {
-      set { _isUnique = newValue }
-      get { _isUnique }
-    }
-    private var _isUnique = false
-
     
     override public var isToMany: Bool {
       if let _isToOneRelationship { return !_isToOneRelationship }
@@ -100,8 +94,8 @@ public extension Schema {
       valueType            = other.valueType
       _inverseName         = other.inverseName
       _destination         = other.destination
-      _isUnique            = other.isUnique
-      _isToOneRelationship = other.isToOneRelationship
+      if other.isUnique { isUnique = true }
+      _isToOneRelationship = other.isToOneRelationship // TBD
     }
     
     // MARK: - Copying
@@ -154,7 +148,7 @@ public extension Schema.Relationship {
     self.deleteRule          = deleteRule
     self.inverseKeyPath      = inverse
 
-    if options.contains(.unique) { _isUnique = true }
+    if options.contains(.unique) { isUnique = true }
 
     if let minimumModelCount { self.minCount = minimumModelCount }
     if let maximumModelCount { self.maxCount = maximumModelCount }

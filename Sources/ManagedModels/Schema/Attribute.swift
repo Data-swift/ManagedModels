@@ -12,14 +12,7 @@ public extension Schema {
    * properties for ManagedModels.
    */
   final class Attribute: CoreData.NSAttributeDescription {
-    
-    final override public var isUnique: Bool {
-      set { _isUnique = newValue }
-      get { _isUnique }
-    }
-    private var _isUnique = false
-
-    
+        
     // MARK: - Initializers
     
     override init() {
@@ -58,7 +51,7 @@ public extension Schema {
       preservesValueInHistoryOnDeletion =
         other.preservesValueInHistoryOnDeletion
       
-      _isUnique = other.isUnique
+      if other.isUnique { isUnique = true }
       
       if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
         allowsCloudEncryption = other.allowsCloudEncryption

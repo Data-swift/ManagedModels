@@ -8,14 +8,13 @@ import CoreData
 @available(iOS 11.0, *) // could backport further
 extension CoreData.NSAttributeDescription: SchemaProperty {
 
-  @inlinable
-  var attributeValueType: Any.Type? {
-    guard let attributeValueClassName else { return nil }
-    return NSClassFromString(attributeValueClassName)
-  }
-  
   public var valueType: Any.Type {
     get {
+      var attributeValueType: Any.Type? {
+        guard let attributeValueClassName else { return nil }
+        return NSClassFromString(attributeValueClassName)
+      }
+
       switch attributeType { // FIXME: return Int for 32bit
         case .integer16AttributeType  :
           if isOptional { return Int16?  .self } else { return Int16 .self }
