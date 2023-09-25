@@ -64,13 +64,13 @@ extension NSEntityDescription {
     // different setups/configs.
     
     if let template = template as? NSAttributeDescription {
-      let attribute = template.copy() as! NSAttributeDescription
+      let attribute = template.internalCopy()
       fixup(attribute, targetType: targetType, meta: propMeta)
       return attribute
     }
     
     if let template = template as? NSRelationshipDescription {
-      let relationship = template.copy() as! NSRelationshipDescription
+      let relationship = template.internalCopy()
       switch RelationshipTargetType(targetType) {
         case .attribute(_):
           // TBD: Rather throw?
@@ -92,8 +92,8 @@ extension NSEntityDescription {
     }
 
     // TBD: Rather throw?
-    assertionFailure("Unexpected property metadata object: \(template)")
     print("Unexpected property metadata object:", template)
+    assertionFailure("Unexpected property metadata object: \(template)")
     return createProperty(propMeta)
   }
   
@@ -106,7 +106,7 @@ extension NSEntityDescription {
     switch RelationshipTargetType(valueType) {
         
       case .attribute(_):
-        let attribute = Schema.Attribute(
+        let attribute = CoreData.NSAttributeDescription(
           name: propMeta.name,
           valueType: valueType,
           defaultValue: propMeta.defaultValue
@@ -114,15 +114,17 @@ extension NSEntityDescription {
         fixup(attribute, targetType: valueType, meta: propMeta)
         return attribute
         
-      case .toOne(modelType: _, optional: _):
-        let relationship = Schema.Relationship()
+      case .toOne(modelType: _, optional: let isOptional):
+        let relationship = CoreData.NSRelationshipDescription()
+        relationship.minCount = isOptional ? 1 : 0
+        relationship.maxCount = 1 // the toOne marker!
         relationship.valueType = valueType
         fixup(relationship, targetType: valueType, isToOne: true,
               meta: propMeta)
         return relationship
         
       case .toMany(collectionType: _, modelType: _):
-        let relationship = Schema.Relationship()
+        let relationship = CoreData.NSRelationshipDescription()
         relationship.valueType = valueType
         fixup(relationship, targetType: valueType, isToOne: false,
               meta: propMeta)
@@ -163,11 +165,9 @@ extension NSEntityDescription {
       relationship.isOrdered = targetType is NSOrderedSet.Type
     }
 
-    if let relationship = relationship as? Schema.Relationship {
-      if relationship.keypath == nil { relationship.keypath = meta.keypath }
-      if relationship.valueType == Any.self {
-        relationship.valueType = targetType
-      }
+    if relationship.keypath == nil { relationship.keypath = meta.keypath }
+    if relationship.valueType == Any.self {
+      relationship.valueType = targetType
     }
   }
 }

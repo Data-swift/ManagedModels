@@ -6,11 +6,14 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
+/**
+ * Information about a variable that we detected as a property.
+ */
 struct ModelProperty {
   
   /**
-   * Whether the property is an Attribute or Relationship, or whether it is
-   * unknown.
+   * Whether the property is an attribute or relationship,
+   * or whether it is unknown at macro expansion time.
    */
   enum PropertyType {
     
@@ -60,6 +63,13 @@ extension ModelProperty {
       case .attribute(_)    : return true
       case .relationship(_) : return false
       case .plain: return valueType?.isKnownAttributePropertyType ?? false
+    }
+  }
+  var isKnownRelationshipPropertyType: Bool {
+    switch type {
+      case .attribute(_)    : return false
+      case .relationship(_) : return true
+      case .plain: return valueType?.isKnownRelationshipPropertyType ?? false
     }
   }
 }

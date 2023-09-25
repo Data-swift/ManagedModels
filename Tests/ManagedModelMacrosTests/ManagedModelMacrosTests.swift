@@ -85,12 +85,12 @@ final class ModelMacroTests: XCTestCase {
     XCTAssertTrue (explodedSource.contains("static let schemaMetadata"))
     XCTAssertTrue (explodedSource.contains(
       """
-      metadata: ManagedModels.Schema.Attribute(name: "firstname", valueType: String.self))
+      metadata: CoreData.NSAttributeDescription(name: "firstname", valueType: String.self))
       """
     ))
     XCTAssertFalse(explodedSource.contains(
       """
-      metadata: ManagedModels.Schema.Attribute(.external, originalName: "First", name: "firstname", valueType: Swift.String.self, defaultValue: nil))
+      metadata: CoreData.NSAttributeDescription(.external, originalName: "First", name: "firstname", valueType: Swift.String.self, defaultValue: nil))
       """
     ))
     
@@ -162,7 +162,7 @@ final class ModelMacroTests: XCTestCase {
     XCTAssertTrue(explodedSource.contains("static let schemaMetadata"))
     XCTAssertTrue(explodedSource.contains(
       """
-      metadata: ManagedModels.Schema.Attribute(.external, originalName: "First", name: "firstname", valueType: Swift.String.self, defaultValue: nil))
+      metadata: CoreData.NSAttributeDescription(.external, originalName: "First", name: "firstname", valueType: Swift.String.self, defaultValue: nil))
       """
     ))
     

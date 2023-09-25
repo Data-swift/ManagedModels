@@ -170,9 +170,6 @@ public final class SchemaBuilder {
     var newEntities = [ NSEntityDescription ]()
     for entity in entities {
       for relationship in entity.relationships {
-        guard let relationship = relationship as? Schema.Relationship else {
-          continue
-        }
         guard let targetType = relationship.modelType else { continue }
         if let newEntity = processModel(targetType) {
           newEntities.append(newEntity)
@@ -218,9 +215,6 @@ public final class SchemaBuilder {
            || relationship.destinationEntity == nil
       {
         // TBD: Cache modelType or entity if too slow to calculate each time.
-        guard let relationship = relationship as? Schema.Relationship else {
-          continue
-        }
         guard let destinationModelType = relationship.modelType else {
           assertionFailure("Relationship has no model type?! \(relationship)")
           continue
@@ -253,9 +247,6 @@ public final class SchemaBuilder {
           targetEntity = entity
         }
         else {
-          guard let relationship = relationship as? Schema.Relationship else {
-            continue
-          }
           guard let targetModel = relationship.modelType else {
             // TBD: fatalError?
             print("WARN: Did not find target model for relationship:",
@@ -273,21 +264,15 @@ public final class SchemaBuilder {
           continue
         }
         
-        if let relationship = relationship as? Schema.Relationship {
-          fillInverseRelationshipData(for: relationship, in: sourceEntity,
-                                      targetEntity: targetEntity)
-        }
-        else {
-          // TBD: Name based lookup
-          assertionFailure("IMPLEMENT ME: Named based inverse setup")
-        }
+        fillInverseRelationshipData(for: relationship, in: sourceEntity,
+                                    targetEntity: targetEntity)
       }
     }
   }
   
   @discardableResult
   private func fillInverseRelationshipData(
-    for relationship : Schema.Relationship,
+    for relationship : NSRelationshipDescription,
     in  sourceEntity : NSEntityDescription,
     targetEntity     : NSEntityDescription
   ) -> Bool
@@ -296,9 +281,12 @@ public final class SchemaBuilder {
     if let inverseKeyPath = relationship.inverseKeyPath {
       guard relationship.inverseName == nil else { return true } // all good
 
+      
+
       // fill name if missing
-      guard let inverseRelship = targetEntity
-        .lookupRelationship(with: inverseKeyPath) else
+      guard let inverseRelship = targetEntity.relationships.first(where: {
+        $0.relationshipInfo?.keypath == inverseKeyPath
+      }) else
       {
         print("Could not find inverse relationship for:", relationship)
         return false
@@ -322,23 +310,20 @@ public final class SchemaBuilder {
     for targetRelationship in targetEntity.relationships {
       
       // check for exact match
-      if let targetRelationship = targetRelationship as? Schema.Relationship {
-        if let targetInverseKeyPath = targetRelationship.inverseKeyPath,
-           relationship.keypath == targetInverseKeyPath
-        { // target relationship has inverse, and it matches our keypath
-          relationship.setInverseRelationship(targetRelationship)
-          return true // exact keypath match
-        }
+      if let targetInverseKeyPath = targetRelationship.inverseKeyPath,
+         relationship.keypath == targetInverseKeyPath
+      { // target relationship has inverse, and it matches our keypath
+        relationship.setInverseRelationship(targetRelationship)
+        return true // exact keypath match
       }
+
       // Only consider targets that point back to our entity.
       guard targetRelationship.destination == sourceEntity.name else {
         assert(!targetRelationship.destination.isEmpty)
         continue
       }
       
-      if let targetRelationship = targetRelationship as? Schema.Relationship,
-         targetRelationship.inverseKeyPath == nil
-      {
+      if targetRelationship.inverseKeyPath == nil {
         if firstMatchWithoutInverse == nil {
           firstMatchWithoutInverse = targetRelationship
         }

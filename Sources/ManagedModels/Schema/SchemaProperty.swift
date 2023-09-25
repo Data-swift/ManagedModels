@@ -26,16 +26,3 @@ public extension SchemaProperty {
     set { renamingIdentifier = newValue }
   }
 }
-
-@objc extension NSPropertyDescription {
-
-  public var isUnique: Bool {
-    set {
-      guard !entity.isPropertyUnique(self) else { return }
-      entity.uniquenessConstraints.append( [ self ])
-    }
-    get {
-      entity.isPropertyUnique(self)
-    }
-  }
-}

@@ -3,21 +3,12 @@
 //  Copyright © 2023 ZeeZide GmbH.
 //
 
-extension Schema.Relationship {
+import CoreData
 
-  func setInverseRelationship(_ newInverseRelationship: 
-                                  NSRelationshipDescription)
-  {
-    if let inverse = newInverseRelationship as? Schema.Relationship {
-      self.setInverseRelationship(inverse)
-    }
-    else {
-      _setInverseRelationship(newInverseRelationship)
-    }
-  }
+extension CoreData.NSRelationshipDescription {
 
-  private func _setInverseRelationship(_ newInverseRelationship:
-                                         NSRelationshipDescription)
+  func setInverseRelationship(_ newInverseRelationship:
+                                NSRelationshipDescription)
   {
     assert(self.inverseRelationship == nil
         || self.inverseRelationship === newInverseRelationship)
@@ -49,14 +40,12 @@ extension Schema.Relationship {
     {
       newInverseRelationship.inverseRelationship = self
     }
-  }
-
-  func setInverseRelationship(_ newInverseRelationship: Schema.Relationship) {
+    
+    // Extra model stuff
+    
     assert(inverseKeyPath == nil
         || inverseKeyPath == newInverseRelationship.keypath)
     assert(inverseName == nil || inverseName == newInverseRelationship.name)
-
-    _setInverseRelationship(newInverseRelationship)
 
     if inverseKeyPath == nil ||
        inverseKeyPath != newInverseRelationship.keypath

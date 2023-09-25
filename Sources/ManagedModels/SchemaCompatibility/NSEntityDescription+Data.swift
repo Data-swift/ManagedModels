@@ -126,24 +126,3 @@ extension NSEntityDescription {
     })
   }
 }
-
-extension NSEntityDescription {
-
-  /**
-   * Lookup a ``Schema/Relationship`` within the entity that has the given
-   * ``Schema/Relationship/keypath`` set to the provided value.
-   *
-   * - Parameters:
-   *   - a Swift KeyPath that is associated w/ a relationship
-   * - Returns: The ``Schema/Relationship`` object if a matching was found.
-   */
-  func lookupRelationship(with keyPath: AnyKeyPath)
-       -> Schema.Relationship?
-  {
-    for relship in relationships {
-      guard let subclass = relship as? Schema.Relationship else { continue }
-      if subclass.keypath == keyPath { return subclass }
-    }
-    return nil
-  }
-}
