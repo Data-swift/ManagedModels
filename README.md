@@ -126,7 +126,7 @@ iOS 10 / macOS 10.12 though (when `NSPersistentContainer` was introduced).
 
 #### TODO
 
-- [ ] Archiving/Unarchiving, required for migration.
+- [x] Archiving/Unarchiving, required for migration.
 - [ ] Figure out whether we can do ordered attributes.
 - [ ] Figure out whether we can add support for array toMany properties.
 - [ ] Support for "autosave".
