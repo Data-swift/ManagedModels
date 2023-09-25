@@ -239,6 +239,56 @@ final class ModelMacroTests: XCTestCase {
     #endif // canImport(ManagedModelMacros)
   }
 
+  func testComputedProperty() throws {
+    #if !canImport(ManagedModelMacros)
+    throw XCTSkip("macros are only supported when running tests for the host platform")
+    #else
+    let explodedFile = parseAndExplode(
+    """
+    @Model
+    final class Person: NSManagedObject {
+      var firstname : String
+      var lastname  : String
+      var fullname  : String { firstname + " " + lastname }
+    }
+    """
+    )
+    
+    // Hm, this doesn't seem to work?
+    let diags = ParseDiagnosticsGenerator.diagnostics(for: explodedFile)
+    XCTAssertTrue(diags.isEmpty)
+    if !diags.isEmpty {
+      print("DIAGS:", diags)
+    }
+
+    let explodedSource = explodedFile.description
+    XCTAssertTrue (explodedSource.contains("init() {"))
+    XCTAssertFalse(explodedSource.contains("convenience init(context:"))
+    XCTAssertTrue (explodedSource.contains(
+      """
+      @NSManaged
+        var firstname : String
+      """
+    ))
+    XCTAssertFalse(explodedSource.contains(
+      """
+      @NSManaged
+        var fullname  : String { firstname + " " + lastname }
+      """
+    ))
+    XCTAssertTrue (explodedSource.contains(
+      """
+      var fullname  : String { firstname + " " + lastname }
+      """
+    ))
+
+    #if true
+    print("Exploded:---\n")
+    print(explodedSource)
+    print("\n-----")
+    #endif
+    #endif // canImport(ManagedModelMacros)
+  }
   
   
   // MARK: - Helper

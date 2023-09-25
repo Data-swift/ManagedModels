@@ -164,6 +164,12 @@ extension ModelMacro {
     // Each binding is a variable in a declaration list,
     // e.g. `let a = 5, b = 6`, the `a` and `b` would be bindings.
     for binding : PatternBindingSyntax in variables.bindings {
+      guard binding.accessorBlock == nil else {
+        // Either this is a computed property or _Swift_ property observers,
+        // which are not allowed w/ `@NSManaged`.
+        continue
+      }
+          
       guard let pattern = binding.pattern.as(IdentifierPatternSyntax.self) else
       {
         continue
