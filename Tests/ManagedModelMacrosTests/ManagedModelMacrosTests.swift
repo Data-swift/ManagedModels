@@ -297,7 +297,7 @@ final class ModelMacroTests: XCTestCase {
       init(context: CoreData.NSManagedObjectContext?)
       """
     ))
-    XCTAssertFalse(explodedSource.contains(
+    XCTAssertTrue(explodedSource.contains(
       """
       override init(entity: CoreData.NSEntityDescription,
       """
