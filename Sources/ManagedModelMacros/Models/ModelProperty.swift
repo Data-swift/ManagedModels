@@ -6,11 +6,14 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
+/**
+ * Information about a variable that we detected as a property.
+ */
 struct ModelProperty {
   
   /**
-   * Whether the property is an `NSAttributeDescription` or `Relationship`,
-   * or whether it is unknown.
+   * Whether the property is an attribute or relationship,
+   * or whether it is unknown at macro expansion time.
    */
   enum PropertyType {
     

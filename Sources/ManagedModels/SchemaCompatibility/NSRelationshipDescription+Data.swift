@@ -68,6 +68,81 @@ public extension CoreData.NSRelationshipDescription {
   }
 }
 
+
+extension CoreData.NSRelationshipDescription {
+  
+  /**
+   * Returns the ``PersistentModel`` type targeted by the relationship,
+   * based on the ``valueType`` property.
+   */
+  var modelType: (any PersistentModel.Type)? {
+    if relationshipInfo?.valueType == nil {
+      if let destinationEntity = destinationEntity {
+        if let type = destinationEntity._objectType {
+          return type
+        }
+      }
+      assertionFailure(
+        "Could not determine model type of relationship: \(self)?")
+      return nil
+    }
+    
+    // TBD: If that's too expensive, we could cache it?
+    switch RelationshipTargetType(valueType) {
+      case .attribute(_):
+        assertionFailure("Detected relationship type as an attribute? \(self)")
+        return nil
+      case .toOne(modelType: let modelType, optional: _):
+        return modelType
+      case .toMany(collectionType: _, modelType: let modelType):
+        return modelType
+    }
+  }
+}
+
+
+// MARK: - Initializer
+
+public extension CoreData.NSRelationshipDescription {
+
+  // Note: This matches what the `Relationship` macro takes.
+  convenience init(_ options: Option..., deleteRule: NSDeleteRule = .nullify,
+                   minimumModelCount: Int? = 0, maximumModelCount: Int? = 0,
+                   originalName: String? = nil, inverse: AnyKeyPath? = nil,
+                   hashModifier: String? = nil, // TBD
+                   name: String? = nil, valueType: Any.Type = Any.self)
+  {
+    // Note The original doesn't take a name, because it is supposed to match
+    // the `@Relationship` macro. That's also why we order those last :-)
+    precondition(minimumModelCount ?? 0 >= 0)
+    precondition(maximumModelCount ?? 0 >= 0)
+    self.init()
+
+    self.name                = name ?? ""
+    self.valueType           = valueType
+    self.renamingIdentifier  = originalName ?? ""
+    self.versionHashModifier = hashModifier
+    self.deleteRule          = deleteRule
+    self.inverseKeyPath      = inverse
+
+    if options.contains(.unique) { isUnique = true }
+
+    if let minimumModelCount { self.minCount = minimumModelCount }
+    if let maximumModelCount {
+      self.maxCount = maximumModelCount
+    }
+    else {
+      if valueType is any RelationshipCollection.Type {
+        self.maxCount = 0
+      }
+      else {
+        self.maxCount = 1 // the toOne marker!
+      }
+    }
+  }
+}
+
+
 // MARK: - Storage
 
 private var _relationshipInfoAssociatedKey: UInt8 = 72

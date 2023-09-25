@@ -31,8 +31,7 @@ final class SchemaGenerationTests: XCTestCase {
     // Those can't be setup yet.
     XCTAssertTrue(toAddresses.destination.isEmpty)
     XCTAssertNil(toAddresses.inverseName)
-    let toAddressesTyped = try XCTUnwrap(toAddresses as? Schema.Relationship)
-    XCTAssertNil(toAddressesTyped.inverseKeyPath) // could be provided by macro
+    XCTAssertNil(toAddresses.inverseKeyPath) // could be provided by macro
   }
   
   func testSchemaGeneration() throws {
@@ -70,10 +69,8 @@ final class SchemaGenerationTests: XCTestCase {
 
     XCTAssertEqual(toPerson   .inverseName, "addresses")
     XCTAssertEqual(toAddresses.inverseName, "person")
-    let toAddressesTyped = try XCTUnwrap(toAddresses as? Schema.Relationship)
-    let toPersonTyped    = try XCTUnwrap(toPerson    as? Schema.Relationship)
-    XCTAssertTrue (toAddressesTyped.keypath == toPersonTyped.inverseKeyPath)
-    XCTAssertTrue (toAddressesTyped.inverseKeyPath == toPersonTyped.keypath)
+    XCTAssertTrue (toAddresses.keypath        == toPerson.inverseKeyPath)
+    XCTAssertTrue (toAddresses.inverseKeyPath == toPerson.keypath)
   }
   
   func testMissingInverse() throws {

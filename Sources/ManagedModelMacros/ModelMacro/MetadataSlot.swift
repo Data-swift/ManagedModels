@@ -59,7 +59,7 @@ extension ModelMacro {
       //       type of a property!
       let valueType = property.valueType ?? "Any"
       var fallback: ExprSyntax {
-        "ManagedModels.Schema.Relationship(name: \(literal: property.name), valueType: \(valueType).self)"
+        "CoreData.NSRelationshipDescription(name: \(literal: property.name), valueType: \(valueType).self)"
       }
       guard let arguments = syntax.arguments else { return fallback }
       guard case .argumentList(var labeledExpressions) = arguments else {
@@ -74,7 +74,7 @@ extension ModelMacro {
         label: "valueType", expression: ExprSyntax("\(valueType).self")
       ))
 
-      return ExprSyntax(FunctionCallExprSyntax(callee: ExprSyntax("ManagedModels.Schema.Relationship")) {
+      return ExprSyntax(FunctionCallExprSyntax(callee: ExprSyntax("CoreData.NSRelationshipDescription")) {
         labeledExpressions
       })
     }
