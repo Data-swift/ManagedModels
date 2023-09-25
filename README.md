@@ -82,8 +82,8 @@ struct ContentView: View {
 }
 
 #Preview {
-  ContentView2()
-    .modelContainer(for: ContentView2.Item.self, inMemory: true)
+  ContentView()
+    .modelContainer(for: Item.self, inMemory: true)
 }
 ```
 
