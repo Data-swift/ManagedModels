@@ -22,11 +22,16 @@ private let attributeTypes : Set<String> = [
   "Swift.Bool",
 
   // Foundation
-  "Data",    "Foundation.Data",
-  "Date",    "Foundation.Date",
-  "URL",     "Foundation.URL",
-  "UUID",    "Foundation.UUID",
-  "Decimal", "Foundation.Decimal"
+  "Data",      "Foundation.Data",
+  "Date",      "Foundation.Date",
+  "URL",       "Foundation.URL",
+  "UUID",      "Foundation.UUID",
+  "Decimal",   "Foundation.Decimal",
+  "NSNumber",  "Foundation.NSNumber",
+  "NSString",  "Foundation.NSString",
+  "NSDecimal", "Foundation.NSDecimal",
+  "NSURL",     "Foundation.NSURL",
+  "NSData",    "Foundation.NSData"
 ]
 
 private let toOneRelationshipTypes : Set<String> = [
