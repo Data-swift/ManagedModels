@@ -61,6 +61,7 @@ iOS 10 / macOS 10.12 though (when `NSPersistentContainer` was introduced).
 - [ ] Figure out whether we can do ordered attributes.
 - [ ] Figure out whether we can add support for array toMany properties.
 - [ ] Support for "autosave".
+- [ ] Support transformable types, not sure they work right yet.
 - [ ] Generate property initializers if the user didn't specify any inits?
 - [ ] Generate `fetchRequest()` class function.
 - [ ] Support SchemaMigrationPlan/MigrationStage.

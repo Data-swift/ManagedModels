@@ -106,7 +106,7 @@ extension NSEntityDescription {
     switch RelationshipTargetType(valueType) {
         
       case .attribute(_):
-        let attribute = Schema.Attribute(
+        let attribute = CoreData.NSAttributeDescription(
           name: propMeta.name,
           valueType: valueType,
           defaultValue: propMeta.defaultValue

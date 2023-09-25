@@ -9,8 +9,8 @@ import SwiftSyntaxMacros
 struct ModelProperty {
   
   /**
-   * Whether the property is an Attribute or Relationship, or whether it is
-   * unknown.
+   * Whether the property is an `NSAttributeDescription` or `Relationship`,
+   * or whether it is unknown.
    */
   enum PropertyType {
     
