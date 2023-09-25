@@ -96,6 +96,11 @@ extension CoreData.NSRelationshipDescription {
         return modelType
       case .toMany(collectionType: _, modelType: let modelType):
         return modelType
+      case .toOrderedSet(optional: _):
+        assertionFailure(
+          "Attempt to get the `modelType` of an NSOrderedSet relship. \(self)"
+        )
+        return nil
     }
   }
 }
@@ -133,6 +138,11 @@ public extension CoreData.NSRelationshipDescription {
     }
     else {
       if valueType is any RelationshipCollection.Type {
+        self.maxCount = 0
+      }
+      else if valueType is NSOrderedSet.Type || 
+              valueType is Optional<NSOrderedSet>.Type
+      {
         self.maxCount = 0
       }
       else {

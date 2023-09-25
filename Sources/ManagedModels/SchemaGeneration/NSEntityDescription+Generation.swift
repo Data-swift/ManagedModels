@@ -15,16 +15,16 @@ extension NSEntityDescription {
    *
    * This is not a general purpose builder, use ``SchemaBuilder`` instead.
    */
-  convenience init<M>(_ type: M.Type) 
+  convenience init<M>(_ type: M.Type)
     where M: NSManagedObject & PersistentModel
   {
     self.init()
     self.name              = _typeName(M.self, qualified: false)
     managedObjectClassName = NSStringFromClass(type)
-
+    
     if let s = M._$originalName { renamingIdentifier  = s }
     if let s = M._$hashModifier { versionHashModifier = s }
-
+    
     for propMeta in M.schemaMetadata {
       let property = processProperty(propMeta)
       
@@ -41,7 +41,7 @@ extension NSEntityDescription {
   // MARK: - Properties
   
   private typealias PropertyMetadata = NSManagedObjectModel.PropertyMetadata
-
+  
   private func processProperty(_ meta: PropertyMetadata)
                -> NSPropertyDescription
   {
@@ -53,13 +53,13 @@ extension NSEntityDescription {
       return createProperty(meta)
     }
   }
-
+  
   private func processProperty<P>(_ propMeta: PropertyMetadata, template: P)
                -> NSPropertyDescription
     where P: NSPropertyDescription
   {
     let targetType = type(of: propMeta.keypath).valueType
-
+    
     // Note that we make a copy of the objects, they might be used in
     // different setups/configs.
     
@@ -78,19 +78,23 @@ extension NSEntityDescription {
           fixup(relationship, targetType: targetType, isToOne: true,
                 meta: propMeta)
           return relationship
-
+          
         case .toOne(modelType: _, optional: _):
           fixup(relationship, targetType: targetType, isToOne: true,
                 meta: propMeta)
           return relationship
-
+          
         case .toMany(collectionType: _, modelType: _):
           fixup(relationship, targetType: targetType, isToOne: false,
                 meta: propMeta)
           return relationship
+          
+        case .toOrderedSet(optional: _):
+          fixupOrderedSet(relationship, meta: propMeta)
+          return relationship
       }
     }
-
+    
     // TBD: Rather throw?
     print("Unexpected property metadata object:", template)
     assertionFailure("Unexpected property metadata object: \(template)")
@@ -101,7 +105,7 @@ extension NSEntityDescription {
                -> NSPropertyDescription
   {
     let valueType = type(of: propMeta.keypath).valueType
-
+    
     // Need to reflect to decide what the keypath is pointing too.
     switch RelationshipTargetType(valueType) {
         
@@ -116,8 +120,9 @@ extension NSEntityDescription {
         
       case .toOne(modelType: _, optional: let isOptional):
         let relationship = CoreData.NSRelationshipDescription()
-        relationship.minCount = isOptional ? 1 : 0
-        relationship.maxCount = 1 // the toOne marker!
+        relationship.minCount   = isOptional ? 1 : 0
+        relationship.maxCount   = 1 // the toOne marker!
+        relationship.isOptional = isOptional
         relationship.valueType = valueType
         fixup(relationship, targetType: valueType, isToOne: true,
               meta: propMeta)
@@ -128,6 +133,16 @@ extension NSEntityDescription {
         relationship.valueType = valueType
         fixup(relationship, targetType: valueType, isToOne: false,
               meta: propMeta)
+        assert(relationship.maxCount != 1)
+        return relationship
+        
+      case .toOrderedSet(optional: let isOptional):
+        let relationship = CoreData.NSRelationshipDescription()
+        relationship.valueType  = valueType
+        relationship.isOptional = isOptional
+        relationship.isOrdered  = true
+        fixupOrderedSet(relationship, meta: propMeta)
+        assert(relationship.maxCount != 1)
         return relationship
     }
   }
@@ -136,7 +151,7 @@ extension NSEntityDescription {
   // MARK: - Fixups
   // Those `fixup` functions take potentially half-filled objects and add
   // in the extra values from the metadata.
-
+  
   private func fixup(_ attribute: NSAttributeDescription, targetType: Any.Type,
                      meta: PropertyMetadata)
   {
@@ -164,10 +179,22 @@ extension NSEntityDescription {
       // Note: In SwiftData arrays are not ordered.
       relationship.isOrdered = targetType is NSOrderedSet.Type
     }
-
+    
     if relationship.keypath == nil { relationship.keypath = meta.keypath }
     if relationship.valueType == Any.self {
       relationship.valueType = targetType
     }
+  }
+  
+  private func fixupOrderedSet(_ relationship: NSRelationshipDescription,
+                               meta: PropertyMetadata)
+  {
+    
+    // TBD: Rather throw?
+    assert(meta.defaultValue == nil, "Relationship w/ default value?")
+    if relationship.name.isEmpty { relationship.name = meta.name }
+    relationship.isOrdered = true
+
+    if relationship.keypath == nil { relationship.keypath = meta.keypath }
   }
 }
