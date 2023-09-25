@@ -104,6 +104,7 @@ public extension Schema {
       // TBD: unclear whether this is good enough?
       Relationship(self)
     }
+    func internalCopy() -> Relationship { Relationship(self) }
   }
 }
 

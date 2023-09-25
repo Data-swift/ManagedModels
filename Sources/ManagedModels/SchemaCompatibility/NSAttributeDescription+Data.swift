@@ -5,6 +5,20 @@
 
 import CoreData
 
+extension CoreData.NSAttributeDescription {
+  
+  func internalCopy() -> Self {
+    guard let copy = self.copy() as? Self else {
+      fatalError("Could not copy attribute \(self)")
+    }
+    assert(copy !== self, "Copy didn't produce a copy?")
+    
+    // Ensure copy of unique marker
+    if isUnique { copy.isUnique = true }
+    return copy
+  }
+}
+
 @available(iOS 11.0, *) // could backport further
 extension CoreData.NSAttributeDescription: SchemaProperty {
 

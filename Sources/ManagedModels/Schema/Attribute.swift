@@ -7,71 +7,7 @@ import CoreData
 
 public extension Schema {
   
-  /**
-   * A subclass of `NSAttributeDescription` that tracks a few more schema
-   * properties for ManagedModels.
-   */
-  final class Attribute: CoreData.NSAttributeDescription {
-        
-    // MARK: - Initializers
-    
-    override init() {
-      super.init()
-    }
-    
-    init(_ other: Attribute) {
-      super.init()
-
-      name                 = other.name
-      isOptional           = other.isOptional
-      isTransient          = other.isTransient
-      userInfo             = other.userInfo
-      versionHashModifier  = other.versionHashModifier
-      isIndexedBySpotlight = other.isIndexedBySpotlight
-      renamingIdentifier   = other.renamingIdentifier
-      
-      if !other.validationPredicates.isEmpty ||
-         !other.validationWarnings.isEmpty
-      {
-        setValidationPredicates(
-          other.validationPredicates,
-          withValidationWarnings: 
-            other.validationWarnings.compactMap { $0 as? String }
-        )
-      }
-
-      attributeType           = other.attributeType
-      attributeValueClassName = other.attributeValueClassName
-      defaultValue            = other.defaultValue
-      valueTransformerName    = other.valueTransformerName
-
-      // get-only: dupe.versionHash = self.versionHash
-      allowsExternalBinaryDataStorage =
-        other.allowsExternalBinaryDataStorage
-      preservesValueInHistoryOnDeletion =
-        other.preservesValueInHistoryOnDeletion
-      
-      if other.isUnique { isUnique = true }
-      
-      if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
-        allowsCloudEncryption = other.allowsCloudEncryption
-      }
-    }
-    
-    required init?(coder: NSCoder) {
-      fatalError("init(coder:) has not been implemented")
-    }
-    
-    @objc(supportsSecureCoding)
-    public class var supportsSecureCoding: Bool { true }
-    
-    // MARK: - Copying
-    
-    override public func copy(with zone: NSZone? = nil) -> Any {
-      // TBD: unclear whether this is good enough? E.g. what about versionHash?
-      Attribute(self)
-    }
-  }
+  typealias Attribute = CoreData.NSAttributeDescription
 }
 
 
@@ -85,11 +21,8 @@ public extension Schema.Attribute {
                    hashModifier: String? = nil)
   {
     self.init()
-    self.name                = ""
-    self.originalName        = originalName ?? ""
-    self.valueType           = Any.self
-    self.isOptional          = false
-    self.versionHashModifier = hashModifier
+    if let originalName { renamingIdentifier  = originalName }
+    if let hashModifier { versionHashModifier = hashModifier }
     setOptions(options)
   }
   
@@ -110,12 +43,12 @@ public extension Schema.Attribute {
                    defaultValue: Any? = nil, hashModifier: String? = nil)
   {
     self.init()
-    self.name                = name
-    self.originalName        = originalName ?? name
-    self.defaultValue        = defaultValue
-    self.versionHashModifier = hashModifier
-    self.isOptional          = valueType is any AnyOptional.Type
-    self.valueType           = valueType
+    if !name.isEmpty { self.name = name }
+    if let originalName { renamingIdentifier  = originalName }
+    if let hashModifier { versionHashModifier = hashModifier }
+    if let defaultValue { self.defaultValue   = defaultValue }
+    isOptional = valueType is any AnyOptional.Type
+    if valueType != Any.self { self.valueType = valueType }
     setOptions(options)
   }
 }

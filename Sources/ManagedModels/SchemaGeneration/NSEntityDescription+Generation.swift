@@ -64,13 +64,13 @@ extension NSEntityDescription {
     // different setups/configs.
     
     if let template = template as? NSAttributeDescription {
-      let attribute = template.copy() as! NSAttributeDescription
+      let attribute = template.internalCopy()
       fixup(attribute, targetType: targetType, meta: propMeta)
       return attribute
     }
     
-    if let template = template as? NSRelationshipDescription {
-      let relationship = template.copy() as! NSRelationshipDescription
+    if let template = template as? Schema.Relationship /*NSRelationshipDescription*/ {
+      let relationship = template.internalCopy()
       switch RelationshipTargetType(targetType) {
         case .attribute(_):
           // TBD: Rather throw?
