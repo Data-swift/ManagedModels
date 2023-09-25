@@ -36,7 +36,7 @@ final class ModelMacroTests: XCTestCase {
     #if !canImport(ManagedModelMacros)
     throw XCTSkip("macros are only supported when running tests for the host platform")
     #else
-    let source =
+    let explodedFile = parseAndExplode(
     """
     @Model
     final class Person: NSManagedObject {
@@ -52,24 +52,6 @@ final class ModelMacroTests: XCTestCase {
       var person     : Person
     }
     """
-
-    // Parse the original source file.
-    let sourceFile : SourceFileSyntax = Parser.parse(source: source)
-
-    // Expand all macros in the source.
-    let context = BasicMacroExpansionContext(
-      sourceFiles: [
-        sourceFile: .init(
-          moduleName: "TestModule",
-          fullFilePath: "TestModule.swift"
-        )
-      ]
-    )
-
-    let explodedFile : Syntax = sourceFile.expand(
-      macros: macros,
-      in: context,
-      indentationWidth: .spaces(2) // what else!
     )
     
     // Hm, this doesn't seem to work?
@@ -106,7 +88,7 @@ final class ModelMacroTests: XCTestCase {
     #if !canImport(ManagedModelMacros)
     throw XCTSkip("macros are only supported when running tests for the host platform")
     #else
-    let source =
+    let explodedFile = parseAndExplode(
     """
     enum MySchema {
       @Model
@@ -130,24 +112,6 @@ final class ModelMacroTests: XCTestCase {
       }
     }
     """
-
-    // Parse the original source file.
-    let sourceFile : SourceFileSyntax = Parser.parse(source: source)
-
-    // Expand all macros in the source.
-    let context = BasicMacroExpansionContext(
-      sourceFiles: [
-        sourceFile: .init(
-          moduleName: "TestModule",
-          fullFilePath: "TestModule.swift"
-        )
-      ]
-    )
-
-    let explodedFile : Syntax = sourceFile.expand(
-      macros: macros,
-      in: context,
-      indentationWidth: .spaces(2) // what else!
     )
     
     // Hm, this doesn't seem to work?
@@ -178,7 +142,7 @@ final class ModelMacroTests: XCTestCase {
     #if !canImport(ManagedModelMacros)
     throw XCTSkip("macros are only supported when running tests for the host platform")
     #else
-    let source =
+    let explodedFile = parseAndExplode(
     """
     @Model
     final class Person: NSManagedObject {
@@ -199,24 +163,6 @@ final class ModelMacroTests: XCTestCase {
       func regularFunction() {}
     }
     """
-
-    // Parse the original source file.
-    let sourceFile : SourceFileSyntax = Parser.parse(source: source)
-
-    // Expand all macros in the source.
-    let context = BasicMacroExpansionContext(
-      sourceFiles: [
-        sourceFile: .init(
-          moduleName: "TestModule",
-          fullFilePath: "TestModule.swift"
-        )
-      ]
-    )
-
-    let explodedFile : Syntax = sourceFile.expand(
-      macros: macros,
-      in: context,
-      indentationWidth: .spaces(2) // what else!
     )
     
     // Hm, this doesn't seem to work?
@@ -253,7 +199,7 @@ final class ModelMacroTests: XCTestCase {
     #if !canImport(ManagedModelMacros)
     throw XCTSkip("macros are only supported when running tests for the host platform")
     #else
-    let source =
+    let explodedFile = parseAndExplode(
     """
     @Model
     final class Person: NSManagedObject {
@@ -262,24 +208,6 @@ final class ModelMacroTests: XCTestCase {
       var addresses : [ Address ]
     }
     """
-
-    // Parse the original source file.
-    let sourceFile : SourceFileSyntax = Parser.parse(source: source)
-
-    // Expand all macros in the source.
-    let context = BasicMacroExpansionContext(
-      sourceFiles: [
-        sourceFile: .init(
-          moduleName: "TestModule",
-          fullFilePath: "TestModule.swift"
-        )
-      ]
-    )
-
-    let explodedFile : Syntax = sourceFile.expand(
-      macros: macros,
-      in: context,
-      indentationWidth: .spaces(2) // what else!
     )
     
     // Hm, this doesn't seem to work?
@@ -311,4 +239,30 @@ final class ModelMacroTests: XCTestCase {
     #endif // canImport(ManagedModelMacros)
   }
 
+  
+  
+  // MARK: - Helper
+  
+  func parseAndExplode(_ source: String) -> Syntax {
+    // Parse the original source file.
+    let sourceFile : SourceFileSyntax = Parser.parse(source: source)
+
+    // Expand all macros in the source.
+    let context = BasicMacroExpansionContext(
+      sourceFiles: [
+        sourceFile: .init(
+          moduleName: "TestModule",
+          fullFilePath: "TestModule.swift"
+        )
+      ]
+    )
+
+    let explodedFile : Syntax = sourceFile.expand(
+      macros: macros,
+      in: context,
+      indentationWidth: .spaces(2) // what else!
+    )
+
+    return explodedFile
+  }
 }
