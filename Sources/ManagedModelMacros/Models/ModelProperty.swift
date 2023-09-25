@@ -6,6 +6,13 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
+private let forbiddenPropertyNames : Set<String> = [
+  "context", "entity", "managedObjectContext", "objectID",
+  "description",
+  "inserted", "updated", "deleted", "hasChanges", "hasPersistentChangedValues",
+  "isFault"
+]
+
 /**
  * Information about a variable that we detected as a property.
  */
@@ -116,7 +123,7 @@ extension ModelMacro {
       // Note: One "member block" can contain multiple variable declarations.
       // Like in: `let a = 5, b = 6`.
       addModelProperties(in: member.decl, to: &properties,
-                         errorNode: errorNode, context: context)
+                         context: context)
     }
 
     return properties
@@ -139,7 +146,6 @@ extension ModelMacro {
    */
   static func addModelProperties<T>(in member: T,
                                     to properties: inout [ ModelProperty ],
-                                    errorNode node: AttributeSyntax,
                                     context: some MacroExpansionContext)
     where T: SyntaxProtocol
   {
@@ -152,7 +158,7 @@ extension ModelMacro {
 
     // Those apply to all variables in the declaration!
     let ( propertyType, isTransient ) = propertyType(
-      for: variables.attributes, errorNode: node, context: context
+      for: variables.attributes, context: context
     )
     
     // Each binding is a variable in a declaration list,
@@ -164,6 +170,12 @@ extension ModelMacro {
       }
       let name = pattern.identifier.trimmed.text
       
+      guard !forbiddenPropertyNames.contains(name) else {
+        context.diagnose(.propertyNameIsForbidden,
+                         on: member)
+        continue
+      }
+
       properties.append(ModelProperty(
         binding: binding,
         type: propertyType,
@@ -177,7 +189,6 @@ extension ModelMacro {
   
   private static func propertyType(
     for attributes: AttributeListSyntax,
-    errorNode node: AttributeSyntax,
     context: some MacroExpansionContext
   ) -> ( propertyType : ModelProperty.PropertyType, isTransient: Bool )
   {
@@ -208,11 +219,11 @@ extension ModelMacro {
                   propertyType = .attribute(attribute)
                 case .attribute(_):
                   context.diagnose(.multipleAttributeMacrosAppliedOnProperty,
-                                   on: node)
+                                   on: attributes)
                 case .relationship(_):
                   context.diagnose(
                     .attributeAndRelationshipMacrosAppliedOnProperty,
-                    on: node
+                    on: attributes
                   )
               }
               
@@ -223,12 +234,12 @@ extension ModelMacro {
                 case .relationship(_):
                   context.diagnose(
                     .multipleRelationshipMacrosAppliedOnProperty,
-                    on: node
+                    on: attributes
                   )
                 case .attribute(_):
                   context.diagnose(
                     .attributeAndRelationshipMacrosAppliedOnProperty,
-                    on: node
+                    on: attributes
                   )
               }
               

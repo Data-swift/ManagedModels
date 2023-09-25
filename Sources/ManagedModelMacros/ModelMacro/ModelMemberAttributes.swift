@@ -30,8 +30,7 @@ extension ModelMacro: MemberAttributeMacro { // @attached(memberAttribute)
     }
 
     var properties = [ ModelProperty ]()
-    addModelProperties(in: member, to: &properties,
-                       errorNode: macroNode, context: context)
+    addModelProperties(in: member, to: &properties, context: context)
 
     guard let property = properties.first else { return [] } // other member
     

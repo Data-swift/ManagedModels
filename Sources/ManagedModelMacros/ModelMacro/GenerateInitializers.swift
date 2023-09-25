@@ -30,8 +30,6 @@ extension ModelMacro {
       }
     }
     
-    // TODO: throw diag if the user uses `context` or `entity` in properties!
-    
     /// This is needed to make it available when the user writes an own
     /// designated initializer alongside!
     let designatedInit : DeclSyntax =
