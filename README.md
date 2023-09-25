@@ -22,7 +22,7 @@ A small sample model:
 ```
 
 <details>
-<summary>The CoreData template project converted to ManagedModels</summary><br/>
+<summary>The full CoreData template application converted to ManagedModels</summary><br/>
 
 ```swift
 import SwiftUI
@@ -86,7 +86,8 @@ struct ContentView: View {
     .modelContainer(for: ContentView2.Item.self, inMemory: true)
 }
 ```
-</summary>
+
+</details>
 
 
 > This is *not* intended as a replacement implementation of
