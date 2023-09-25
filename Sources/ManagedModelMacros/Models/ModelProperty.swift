@@ -62,6 +62,13 @@ extension ModelProperty {
       case .plain: return valueType?.isKnownAttributePropertyType ?? false
     }
   }
+  var isKnownRelationshipPropertyType: Bool {
+    switch type {
+      case .attribute(_)    : return false
+      case .relationship(_) : return true
+      case .plain: return valueType?.isKnownRelationshipPropertyType ?? false
+    }
+  }
 }
 
 extension ModelProperty: CustomStringConvertible {

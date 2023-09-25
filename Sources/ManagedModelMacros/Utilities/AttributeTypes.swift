@@ -22,9 +22,24 @@ private let attributeTypes : Set<String> = [
   "Swift.Bool",
 
   // Foundation
-  "Data", "Foundation.Data",
-  "Date", "Foundation.Date",
-  "URL",  "Foundation.URL"
+  "Data",    "Foundation.Data",
+  "Date",    "Foundation.Date",
+  "URL",     "Foundation.URL",
+  "UUID",    "Foundation.UUID",
+  "Decimal", "Foundation.Decimal"
+]
+
+private let toOneRelationshipTypes : Set<String> = [
+  // CoreData
+  "NSManagedObject", "CoreData.NSManagedObject",
+  // TBD: Those would be wrapped?
+  "any PersistentModel", "any ManagedModels.PersistentModel"
+]
+private let toManyRelationshipTypes : Set<String> = [
+  // Foundation
+  "Set",          "Foundation.Set",
+  "NSSet",        "Foundation.NSSet",
+  "NSOrderedSet", "Foundation.NSOrderedSet"
 ]
 
 extension TypeSyntax {
@@ -43,13 +58,29 @@ extension TypeSyntax {
     }
     return false
   }
+  
+  var isKnownRelationshipPropertyType : Bool {
+    isKnownRelationshipPropertyType(checkOptional: true)
+  }
+  func isKnownRelationshipPropertyType(checkOptional: Bool) -> Bool {
+    if let id = self.as(IdentifierTypeSyntax.self) {
+      return id.isKnownRelationshipPropertyType
+    }
+    
+    // Optionals of relationship types are also relationships, but only
+    // at one level.
+    if checkOptional, let opt = self.as(OptionalTypeSyntax.self) {
+      return opt.wrappedType.isKnownRelationshipPropertyType
+    }
+    return false
+  }
 }
 
 extension IdentifierTypeSyntax {
   
   var isKnownAttributePropertyType : Bool {
     let name = name.trimmed.text
-
+    
     guard let generic = genericArgumentClause else {
       return attributeTypes.contains(name)
     }
@@ -62,12 +93,46 @@ extension IdentifierTypeSyntax {
       assertionFailure("Generic clause but no arguments?")
       return false
     }
-        
+    
     switch name {
       case "Array", "Optional", "Set":
         return genericArgument.argument.isKnownAttributePropertyType
       default:
         return false
+    }
+  }
+
+  var isKnownRelationshipPropertyType : Bool {
+    isKnownRelationshipPropertyType(checkOptional: true)
+  }
+
+  func isKnownRelationshipPropertyType(checkOptional: Bool) -> Bool {
+    let name = name.trimmed.text
+    
+    if name == "Optional" { // recurse
+      guard let generic = genericArgumentClause,
+            let genericArgument = generic.arguments.first,
+            generic.arguments.count != 1 else
+      {
+        return false
+      }
+      return genericArgument.argument
+        .isKnownRelationshipPropertyType(checkOptional: false)
+    }
+    
+    if toOneRelationshipTypes.contains(name) {
+      return true
+    }
+
+    guard toManyRelationshipTypes.contains(name) else {
+      return false
+    }
+    
+    if let generic = genericArgumentClause {
+      return generic.arguments.count == 1
+    }
+    else {
+      return true
     }
   }
 }
