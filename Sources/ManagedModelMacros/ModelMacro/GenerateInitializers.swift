@@ -30,9 +30,12 @@ extension ModelMacro {
       }
     }
     
-    /// This is needed to make it available when the user writes an own
-    /// designated initializer alongside!
-    let designatedInit : DeclSyntax =
+    // This is needed to make it available when the user writes an own
+    // designated initializer alongside!
+    // Wrong: This is always needed, otherwise we get an:
+    // > Fatal error: Use of unimplemented initializer 
+    // > 'init(entity:insertInto:)' for class XYZ.
+    newInitializers.append(
       """
       /// Initialize a `\(modelClassName)` object, optionally providing an
       /// `NSManagedObjectContext` it should be inserted into.
@@ -40,17 +43,14 @@ extension ModelMacro {
       //    - entity:  An `NSEntityDescription` describing the object.
       //    - context: An `NSManagedObjectContext` the object should be inserted into.
       @available(*, deprecated, renamed: "init(context:)",
-                 message: "Use `init(context:)`/`init()` instead.")
-      \(raw: access)override init(entity: CoreData.NSEntityDescription,
-            insertInto context: NSManagedObjectContext? = nil)
+                 message: "Use `init(context:)` or `init()` instead.")
+      \(raw: access)override init(entity: CoreData.NSEntityDescription, insertInto context: NSManagedObjectContext?)
       {
         assert(entity === Self._$entity, "Attempt to initialize PersistentModel w/ different entity?")
         super.init(entity: entity, insertInto: context)
       }
       """
-    if initializers.hasDesignatedInitializers {
-      newInitializers.append(designatedInit)
-    }
+    )
     
     // This has to be a convenience init because the user might add an own
     // required init, e.g.:
@@ -60,7 +60,7 @@ extension ModelMacro {
     //   }
     // The problem is that designated initializers cannot delegate to other
     // designated initializers.
-    let insertWithContext : DeclSyntax =
+    newInitializers.append(
       """
       /// Initialize a `\(modelClassName)` object, optionally providing an
       /// `NSManagedObjectContext` it should be inserted into.
@@ -70,10 +70,10 @@ extension ModelMacro {
         super.init(entity: Self._$entity, insertInto: context)
       }
       """
-    newInitializers.append(insertWithContext)
+    )
     
     if !initializers.hasNoArgumentInitializer {
-      let noArgumentInitializer : DeclSyntax =
+      newInitializers.append(
         """
         /// Initialize a `\(modelClassName)` object w/o inserting it into a
         /// context.
@@ -81,7 +81,7 @@ extension ModelMacro {
           super.init(entity: Self._$entity, insertInto: nil)
         }
         """
-      newInitializers.append(noArgumentInitializer)
+      )
     }
     
     return newInitializers
