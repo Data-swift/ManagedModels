@@ -5,8 +5,6 @@
 
 import CoreData
 
-extension CoreData.NSAttributeDescription: FinalizableObject {}
-
 @available(iOS 11.0, *) // could backport further
 extension CoreData.NSAttributeDescription: SchemaProperty {
 
@@ -51,7 +49,6 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
       }
     }
     set {
-      ensureNotFinalized()
       if newValue == Int.self {
         self.attributeType           = .integer64AttributeType
         self.isOptional              = false

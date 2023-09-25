@@ -13,30 +13,13 @@ public extension Schema {
    */
   final class Relationship: CoreData.NSRelationshipDescription, SchemaProperty {
     
-    public var keypath : AnyKeyPath? {
-      willSet {
-        guard keypath != newValue else { return }
-        ensureNotFinalized()
-      }
-    }
-    public var inverseKeyPath : AnyKeyPath? {
-      willSet {
-        guard inverseKeyPath != newValue else { return }
-        ensureNotFinalized()
-      }
-    }
-
-    public var valueType: Any.Type = Any.self {
-      willSet {
-        guard valueType != newValue else { return }
-        ensureNotFinalized()
-      }
-    }
+    public var keypath        : AnyKeyPath?
+    public var inverseKeyPath : AnyKeyPath?
+    public var valueType      : Any.Type = Any.self
 
     final override public var inverseName: String? {
       set {
         guard _inverseName != newValue else { return }
-        ensureNotFinalized()
         _inverseName = newValue
       }
       get { _inverseName }
@@ -46,7 +29,6 @@ public extension Schema {
     final override public var destination: String {
       set {
         guard _destination != newValue else { return }
-        ensureNotFinalized()
         _destination = newValue
       }
       get { _destination }
@@ -59,25 +41,19 @@ public extension Schema {
     }
     private var _isUnique = false
 
-    override public var isToOneRelationship : Bool {
-      _isToOneRelationship ?? !(valueType is any RelationshipCollection.Type)
+    
+    override public var isToMany: Bool {
+      if let _isToOneRelationship { return !_isToOneRelationship }
+      return valueType is any RelationshipCollection.Type
+          || valueType is NSOrderedSet.Type
     }
     var _isToOneRelationship : Bool? {
       willSet {
         guard _isToOneRelationship != newValue else { return }
         assert(_isToOneRelationship == nil)
-        ensureNotFinalized()
       }
     }
-    
-    override public var isToMany: Bool { !isToOneRelationship }
 
-    final override public var isFinalized: Bool {
-      set { _isFinalized = newValue }
-      get { _isFinalized }
-    }
-    private var _isFinalized = false
-    
     
     // MARK: - Initializers
     

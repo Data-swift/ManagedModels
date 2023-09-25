@@ -156,7 +156,6 @@ public final class SchemaBuilder {
     // Lookup inverse relationships
     fillInverseRelationshipData(entitiesByType.values)
     
-    entitiesByType.values.forEach { $0.markAsFinalized() }
     frozenTypes.formUnion(entitiesByType.keys)
   }
   

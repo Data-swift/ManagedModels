@@ -19,12 +19,6 @@ public extension Schema {
     }
     private var _isUnique = false
 
-    final override public var isFinalized: Bool {
-      set { _isFinalized = newValue }
-      get { _isFinalized }
-    }
-    private var _isFinalized = false
-
     
     // MARK: - Initializers
     

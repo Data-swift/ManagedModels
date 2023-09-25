@@ -64,14 +64,12 @@ extension NSEntityDescription {
     // different setups/configs.
     
     if let template = template as? NSAttributeDescription {
-      template.isFinalized = true // make sure no one touches the templates
       let attribute = template.copy() as! NSAttributeDescription
       fixup(attribute, targetType: targetType, meta: propMeta)
       return attribute
     }
     
     if let template = template as? NSRelationshipDescription {
-      template.isFinalized = true // make sure no one touches the templates
       let relationship = template.copy() as! NSRelationshipDescription
       switch RelationshipTargetType(targetType) {
         case .attribute(_):
@@ -114,7 +112,6 @@ extension NSEntityDescription {
           defaultValue: propMeta.defaultValue
         )
         fixup(attribute, targetType: valueType, meta: propMeta)
-        attribute.markAsFinalized() // Those are never massaged afterwards.
         return attribute
         
       case .toOne(modelType: _, optional: _):

@@ -5,16 +5,6 @@
 
 import CoreData
 
-extension CoreData.NSEntityDescription: FinalizableObject {
-  
-  public func markAsFinalized() {
-    guard !isFinalized else { return }
-    isFinalized = true
-    for attribute    in attributes    { attribute   .isFinalized = true }
-    for relationship in relationships { relationship.isFinalized = true }
-  }
-}
-
 public extension CoreData.NSEntityDescription {
   // Note: `uniquenessConstraints` is String only in SwiftData
   
@@ -113,8 +103,6 @@ public extension NSEntityDescription {
 extension NSEntityDescription {
 
   func addProperties(_ newProperties: [ NSPropertyDescription ]) {
-    if newProperties.isEmpty { return }
-    ensureNotFinalized()
     for newProperty in newProperties {
       properties.append(newProperty)
     }

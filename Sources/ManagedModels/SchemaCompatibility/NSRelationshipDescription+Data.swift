@@ -5,8 +5,6 @@
 
 import CoreData
 
-extension CoreData.NSRelationshipDescription: FinalizableObject {}
-
 extension CoreData.NSRelationshipDescription {
   
   public typealias DeleteRule = NSDeleteRule
