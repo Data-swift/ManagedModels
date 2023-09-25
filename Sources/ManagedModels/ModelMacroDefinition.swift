@@ -69,6 +69,7 @@ public macro Transient() =
   named(init),           // Initializers.
   named(schemaMetadata), // The metadata.
   named(entity),         // Override the `entity()` function.
+  named(fetchRequest),   // The fetchRequest factory
   named(_$entity),       // The cached the Entity
   named(_$originalName),
   named(_$hashModifier)

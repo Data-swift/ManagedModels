@@ -43,7 +43,7 @@ extension ModelInitializer: CustomStringConvertible {
 }
 
 extension ModelMacro {
-  
+    
   static func findInitializers(in classDecl: ClassDeclSyntax)
               -> [ ModelInitializer ]
   {

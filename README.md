@@ -63,6 +63,7 @@ iOS 10 / macOS 10.12 though (when `NSPersistentContainer` was introduced).
 - [ ] Support for "autosave".
 - [ ] Generate property initializers if the user didn't specify any inits?
 - [ ] Generate `fetchRequest()` class function.
+- [ ] Support SchemaMigrationPlan/MigrationStage.
 - [ ] Write more tests.
 - [ ] Write DocC docs.
 - [ ] Support for entity inheritance.

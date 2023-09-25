@@ -60,6 +60,14 @@ final class FetchRequestTests: SwiftUITestCase {
     }
     return context
   }()
+  
+  func testFetchRequest() throws {
+    let context = try XCTUnwrap(context)
+
+    let fetchRequest = Address.fetchRequest()
+    let models       = try context.fetch(fetchRequest)
+    XCTAssertEqual(models.count, 3)
+  }
 
   func testFetchCount() throws {
     let context = try XCTUnwrap(context)
