@@ -75,7 +75,48 @@ final class SchemaGenerationTests: XCTestCase {
     XCTAssertTrue (toAddresses.keypath        == toPerson.inverseKeyPath)
     XCTAssertTrue (toAddresses.inverseKeyPath == toPerson.keypath)
   }
-  
+
+  func testAutomaticDependencies() throws {
+    let cache  = SchemaBuilder()
+    let schema = NSManagedObjectModel(
+      [ Fixtures.PersonAddressSchema.Person.self ],
+      schemaCache: cache
+    )
+    
+    XCTAssertEqual(schema.entities.count, 2)
+    XCTAssertEqual(schema.entitiesByName.count, 2)
+    
+    let person  = try XCTUnwrap(schema.entitiesByName["Person"])
+    let address = try XCTUnwrap(schema.entitiesByName["Address"])
+    
+    XCTAssertEqual(person.attributes.count, 2)
+    XCTAssertEqual(person.relationships.count, 1)
+    let firstname   = try XCTUnwrap(person.attributesByName["firstname"])
+    let lastname    = try XCTUnwrap(person.attributesByName["lastname"])
+    let toAddresses = try XCTUnwrap(person.relationshipsByName["addresses"])
+    XCTAssertFalse (firstname.isTransient)
+    XCTAssertFalse (lastname.isRelationship)
+    XCTAssertTrue  (toAddresses.isRelationship)
+    XCTAssertFalse (toAddresses.isToOneRelationship)
+    XCTAssertEqual (toAddresses.destination, "Address")
+    XCTAssertNotNil(toAddresses.destinationEntity)
+
+    XCTAssertEqual(address.attributes.count, 2)
+    XCTAssertEqual(address.relationships.count, 1)
+    let toPerson = try XCTUnwrap(address.relationshipsByName["person"])
+    XCTAssertTrue (toPerson.isRelationship)
+    XCTAssertTrue (toPerson.isToOneRelationship)
+    XCTAssertEqual(toPerson.destination, "Person")
+
+    XCTAssertTrue(toAddresses.destinationEntity === address)
+    XCTAssertTrue(toPerson   .destinationEntity === person)
+
+    XCTAssertEqual(toPerson   .inverseName, "addresses")
+    XCTAssertEqual(toAddresses.inverseName, "person")
+    XCTAssertTrue (toAddresses.keypath        == toPerson.inverseKeyPath)
+    XCTAssertTrue (toAddresses.inverseKeyPath == toPerson.keypath)
+  }
+
   func testMissingInverse() throws {
     let cache = SchemaBuilder()
     
