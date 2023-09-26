@@ -49,15 +49,9 @@ extension ModelMacro: MemberMacro { // @attached(member, names:...)
       initializers: findInitializers(in: classDecl)
     )
 
-    let needsFR : Bool = {
-      guard let f = classDecl
-        .findFunctionWithName("fetchRequest", isStatic: true) else
-      {
-        return true
-      }
-      return f.parameterCount != 0
-    }()
-    if needsFR {
+    if classDecl.findFunctionWithName("fetchRequest", isStaticOrClass: true,
+                                      parameterCount: 0) == nil
+    {
       let modelClassName = modelClassName.text
       newMembers.append(
         """
@@ -78,13 +72,9 @@ extension ModelMacro: MemberMacro { // @attached(member, names:...)
     )
     newMembers.append(DeclSyntax(metadata))
 
-    let needsEntity : Bool = {
-      guard let f = classDecl.findFunctionWithName("entity", isStatic: true) else {
-        return true
-      }
-      return f.parameterCount != 0
-    }()
-    if needsEntity {
+    if classDecl.findFunctionWithName("entity", isStaticOrClass: true,
+                                      parameterCount: 0) == nil
+    {
       newMembers.append(
         """
         /// Returns the `NSEntityDescription` associated w/ the `PersistentModel`.
