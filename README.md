@@ -103,6 +103,13 @@ The macro implementation requires Xcode 15/Swift 5.9 for compilation.
 The generated code itself though should backport way back to 
 iOS 10 / macOS 10.12 though (when `NSPersistentContainer` was introduced).
 
+Package URL:
+```
+https://github.com/Data-swift/ManagedModels.git
+```
+
+ManagedModels has no other dependencies.
+
 
 #### Differences to SwiftData
 
