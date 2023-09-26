@@ -28,6 +28,9 @@ final class SchemaGenerationTests: XCTestCase {
     XCTAssertTrue (toAddresses.isRelationship)
     XCTAssertFalse(toAddresses.isToOneRelationship)
     
+    XCTAssertEqual(firstname.attributeType, .stringAttributeType)
+    XCTAssertTrue(firstname.valueType == String.self)
+    
     // Those can't be setup yet.
     XCTAssertTrue(toAddresses.destination.isEmpty)
     XCTAssertNil(toAddresses.inverseName)

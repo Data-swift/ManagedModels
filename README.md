@@ -1,5 +1,5 @@
 <h2>ManagedModels for CoreData
-  <img src="https://zeezide.com/img/lighter/Lighter256.png"
+  <img src="https://zeezide.com/img/managedmodels/ManagedModels128.png"
        align="right" width="64" height="64" />
 </h2>
 
@@ -82,8 +82,8 @@ struct ContentView: View {
 }
 
 #Preview {
-  ContentView2()
-    .modelContainer(for: ContentView2.Item.self, inMemory: true)
+  ContentView()
+    .modelContainer(for: Item.self, inMemory: true)
 }
 ```
 
@@ -102,6 +102,13 @@ struct ContentView: View {
 The macro implementation requires Xcode 15/Swift 5.9 for compilation.
 The generated code itself though should backport way back to 
 iOS 10 / macOS 10.12 though (when `NSPersistentContainer` was introduced).
+
+Package URL:
+```
+https://github.com/Data-swift/ManagedModels.git
+```
+
+ManagedModels has no other dependencies.
 
 
 #### Differences to SwiftData
@@ -126,25 +133,25 @@ iOS 10 / macOS 10.12 though (when `NSPersistentContainer` was introduced).
 
 #### TODO
 
-- [ ] Archiving/Unarchiving, required for migration.
-- [ ] Figure out whether we can do ordered attributes.
-- [ ] Figure out whether we can add support for array toMany properties.
-- [ ] Support for "autosave".
-- [ ] Support transformable types, not sure they work right yet.
-- [ ] Generate property initializers if the user didn't specify any inits?
-- [ ] Generate `fetchRequest()` class function.
-- [ ] Support SchemaMigrationPlan/MigrationStage.
+- [x] Archiving/Unarchiving, required for migration.
+- [ ] Figure out whether we can do ordered attributes: [Issue #1](https://github.com/Data-swift/ManagedModels/issues/1).
+- [ ] Figure out whether we can add support for array toMany properties: [Issue #2](https://github.com/Data-swift/ManagedModels/issues/2)
+- [ ] Support for "autosave": [Issue #3](https://github.com/Data-swift/ManagedModels/issues/3)
+- [ ] Support transformable types, not sure they work right yet: [Issue #4](https://github.com/Data-swift/ManagedModels/issues/4)
+- [ ] Generate property initializers if the user didn't specify any inits: [Issue #5](https://github.com/Data-swift/ManagedModels/issues/5)
+- [x] Generate `fetchRequest()` class function.
+- [ ] Support SchemaMigrationPlan/MigrationStage: [Issue #6](https://github.com/Data-swift/ManagedModels/issues/6)
 - [ ] Write more tests.
-- [ ] Write DocC docs.
-- [ ] Support for entity inheritance.
-- [ ] Add support for originalName/versionHash in `@Model`.
-- [ ] Generate "To Many" accessor function prototypes (`addItemToGroup` etc).
-- [ ] Foundation Predicate support (would require iOS 17+)
-  - [ ] SwiftUI `@Query` property wrapper/macro?
+- [ ] Write DocC docs: [Issue #7](https://github.com/Data-swift/ManagedModels/issues/7), [Issue #8](https://github.com/Data-swift/ManagedModels/issues/8)
+- [ ] Support for entity inheritance: [Issue #9](https://github.com/Data-swift/ManagedModels/issues/9)
+- [ ] Add support for originalName/versionHash in `@Model`: [Issue 10](https://github.com/Data-swift/ManagedModels/issues/10)
+- [ ] Generate "To Many" accessor function prototypes (`addItemToGroup` etc): [Issue 11](https://github.com/Data-swift/ManagedModels/issues/11)
+- [x] Foundation Predicate support (would require iOS 17+) - this seems actually supported by CoreData!
+  - [ ] SwiftUI `@Query` property wrapper/macro?: [Issue 12](https://github.com/Data-swift/ManagedModels/issues/12)
 - [ ] Figure out all the cloud sync options SwiftData has and whether CoreData
-      can do them.
+      can do them: [Issue 13](https://github.com/Data-swift/ManagedModels/issues/13)
 - [ ] Figure out whether we can allow initialized properties 
-      (`var title = "No Title"`).
+      (`var title = "No Title"`): [Issue 14](https://github.com/Data-swift/ManagedModels/issues/14)
 
 Pull requests are very welcome!
 Even just DocC documentation or more tests would be welcome contributions.
@@ -155,8 +162,16 @@ Even just DocC documentation or more tests would be welcome contributions.
 - Apple:
   - [CoreData](https://developer.apple.com/documentation/coredata)
   - [SwiftData](https://developer.apple.com/documentation/swiftdata)
+    - [Meet SwiftData](https://developer.apple.com/videos/play/wwdc2023/10187)
+    - [Build an App with SwiftData](https://developer.apple.com/videos/play/wwdc2023/10154)
+    - [Model your Schema with SwiftData](https://developer.apple.com/videos/play/wwdc2023/10195)
+  - [Enterprise Objects Framework](https://en.wikipedia.org/wiki/Enterprise_Objects_Framework) / aka EOF
+    - [Developer Guide](https://developer.apple.com/library/archive/documentation/LegacyTechnologies/WebObjects/WebObjects_4.5/System/Documentation/Developer/EnterpriseObjects/DevGuide/EOFDevGuide.pdf)
 - [Lighter.swift](https://github.com/Lighter-swift), typesafe and superfast 
   [SQLite](https://www.sqlite.org) Swift tooling.
+- [ZeeQL](http://zeeql.io), prototype of an [EOF](https://en.wikipedia.org/wiki/Enterprise_Objects_Framework) for Swift,
+  with many database backends.
+  
 
 
 #### Disclaimer

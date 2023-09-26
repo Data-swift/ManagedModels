@@ -73,12 +73,12 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
         self.attributeValueClassName = "NSNumber"
       }
       else if newValue == String.self {
-        self.attributeType           = .integer64AttributeType
+        self.attributeType           = .stringAttributeType
         self.isOptional              = false
         self.attributeValueClassName = "NSString"
       }
       else if newValue == String?.self {
-        self.attributeType           = .integer64AttributeType
+        self.attributeType           = .stringAttributeType
         self.isOptional              = true
         self.attributeValueClassName = "NSString"
       }
@@ -169,16 +169,6 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
       }
       else if newValue == Int16?.self {
         self.attributeType           = .integer16AttributeType
-        self.isOptional              = true
-        self.attributeValueClassName = "NSNumber"
-      }
-      else if newValue == Int32.self {
-        self.attributeType           = .integer32AttributeType
-        self.isOptional              = false
-        self.attributeValueClassName = "NSNumber"
-      }
-      else if newValue == Int32?.self {
-        self.attributeType           = .integer32AttributeType
         self.isOptional              = true
         self.attributeValueClassName = "NSNumber"
       }
