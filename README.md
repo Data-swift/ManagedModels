@@ -155,8 +155,13 @@ Even just DocC documentation or more tests would be welcome contributions.
 - Apple:
   - [CoreData](https://developer.apple.com/documentation/coredata)
   - [SwiftData](https://developer.apple.com/documentation/swiftdata)
+  - [Enterprise Objects Framework](https://en.wikipedia.org/wiki/Enterprise_Objects_Framework) / aka EOF
+    - [Developer Guide](https://developer.apple.com/library/archive/documentation/LegacyTechnologies/WebObjects/WebObjects_4.5/System/Documentation/Developer/EnterpriseObjects/DevGuide/EOFDevGuide.pdf)
 - [Lighter.swift](https://github.com/Lighter-swift), typesafe and superfast 
   [SQLite](https://www.sqlite.org) Swift tooling.
+- [ZeeQL](http://zeeql.io), prototype of an [EOF](https://en.wikipedia.org/wiki/Enterprise_Objects_Framework) for Swift,
+  with many database backends.
+  
 
 
 #### Disclaimer
