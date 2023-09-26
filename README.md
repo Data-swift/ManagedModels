@@ -155,6 +155,9 @@ Even just DocC documentation or more tests would be welcome contributions.
 - Apple:
   - [CoreData](https://developer.apple.com/documentation/coredata)
   - [SwiftData](https://developer.apple.com/documentation/swiftdata)
+    - [Meet SwiftData](https://developer.apple.com/videos/play/wwdc2023/10187)
+    - [Build an App with SwiftData](https://developer.apple.com/videos/play/wwdc2023/10154)
+    - [Model your Schema with SwiftData](https://developer.apple.com/videos/play/wwdc2023/10195)
   - [Enterprise Objects Framework](https://en.wikipedia.org/wiki/Enterprise_Objects_Framework) / aka EOF
     - [Developer Guide](https://developer.apple.com/library/archive/documentation/LegacyTechnologies/WebObjects/WebObjects_4.5/System/Documentation/Developer/EnterpriseObjects/DevGuide/EOFDevGuide.pdf)
 - [Lighter.swift](https://github.com/Lighter-swift), typesafe and superfast 
