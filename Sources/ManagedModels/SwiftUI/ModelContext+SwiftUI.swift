@@ -24,6 +24,7 @@ public extension View {
   }
 }
 
+@available(iOS 14.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 public extension Scene {
   
   @inlinable
