@@ -12,13 +12,35 @@ extension VariableDeclSyntax {
 }
 
 extension InitializerDeclSyntax {
-
+  
   var isConvenience : Bool {
     modifiers.contains { $0.name.tokenKind == .keyword(.convenience) }
+  }
+  
+  var parameterCount : Int { signature.parameterClause.parameters.count }
+  
+  var numberOfParametersWithoutDefaults : Int {
+    signature.parameterClause.parameters.numberOfParametersWithoutDefaults
   }
 }
 
 extension FunctionDeclSyntax {
   
   var parameterCount : Int { signature.parameterClause.parameters.count }
+  
+  var numberOfParametersWithoutDefaults : Int {
+    signature.parameterClause.parameters.numberOfParametersWithoutDefaults
+  }
+}
+
+extension FunctionParameterListSyntax {
+  
+  var numberOfParametersWithoutDefaults : Int {
+    var count = 0
+    for parameter : FunctionParameterSyntax in self {
+      guard parameter.defaultValue == nil else { continue }
+      count += 1
+    }
+    return count
+  }
 }
