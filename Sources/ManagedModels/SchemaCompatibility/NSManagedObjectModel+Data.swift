@@ -23,7 +23,7 @@ public extension NSManagedObjectModel {
                    version: Schema.Version = Version(1, 0, 0))
   {
     self.init()
-    self.entities = SchemaBuilder.shared.resolve(types)
+    self.entities = SchemaBuilder.shared.lookupAllEntities(for: types)
   }
   
   @inlinable
@@ -80,7 +80,7 @@ internal extension NSManagedObjectModel {
                    schemaCache: SchemaBuilder)
   {
     self.init()
-    self.entities = schemaCache.resolve(types)
+    self.entities = schemaCache.lookupAllEntities(for: types)
   }
   
   /// Initializer for testing purposes.

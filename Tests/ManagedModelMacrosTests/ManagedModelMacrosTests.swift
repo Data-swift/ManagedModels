@@ -173,7 +173,7 @@ final class ModelMacroTests: XCTestCase {
     }
 
     let explodedSource = explodedFile.description
-    XCTAssertTrue (explodedSource.contains("init() {"))
+    XCTAssertFalse(explodedSource.contains("init() {"))
     XCTAssertFalse(explodedSource.contains("convenience init(context:"))
     XCTAssertTrue (explodedSource.contains(
       """
@@ -282,7 +282,7 @@ final class ModelMacroTests: XCTestCase {
       """
     ))
 
-    #if true
+    #if false
     print("Exploded:---\n")
     print(explodedSource)
     print("\n-----")

@@ -72,31 +72,13 @@ public final class SchemaBuilder {
    * Thread Safety: This is a thread-safe operation. Do NOT modify the returned
    *                Schema objects.
    */
-  func resolve(_ modelTypes: [ any PersistentModel.Type ])
+  func lookupAllEntities(for modelTypes: [ any PersistentModel.Type ])
        -> [ NSEntityDescription ]
   {
-    var entities       = [ NSEntityDescription ]()
-    var entitiesByName = [ String : NSEntityDescription ]()
+    var entities = [ NSEntityDescription ]()
 
     lock.lock()
-    process(modelTypes)
-    
-    for modelType in modelTypes {
-      guard let entity = lookupEntity(modelType) else {
-        fatalError(
-          """
-          Could not construct `NSEntityDescription` for `PersistentModel` type
-          
-            \(modelType)
-          
-          """
-        )
-      }
-      // Return just the ones we need.
-      entities.append(entity)
-      precondition(entity.name != nil, "Entity w/o a name? \(entity)")
-      if let name = entity.name { entitiesByName[name] = entity }
-    }
+    process(modelTypes, entities: &entities)
     lock.unlock()
     
     return entities
@@ -115,10 +97,11 @@ public final class SchemaBuilder {
   public func _entity<M>(for modelType: M.Type) -> NSEntityDescription
     where M: PersistentModel
   {
+    var entities = [ NSEntityDescription ]()
     let modelTypes = [ modelType ]
     lock.lock()
     let entity = lookupEntity(modelType) ?? {
-      process(modelTypes)
+      process(modelTypes, entities: &entities)
       guard let entity = lookupEntity(modelType) else {
         fatalError(
           "Could not construct Entity for PersistentModel type: \(modelType)")
@@ -132,7 +115,9 @@ public final class SchemaBuilder {
   
   // MARK: - Things that run in the lock!
 
-  private func process(_ modelTypes: [ any PersistentModel.Type ]) {
+  private func process(_ modelTypes: [ any PersistentModel.Type ],
+                       entities: inout [ NSEntityDescription ])
+  {
     // Note: This is called recursively
     var allFrozen = false
     
@@ -140,7 +125,9 @@ public final class SchemaBuilder {
     for modelType in modelTypes {
       guard !isFrozen(modelType) else { continue }
       allFrozen = false
-      /* newEntity */ _ = processModel(modelType)
+      if let newEntity = processModel(modelType) {
+        entities.append(newEntity)
+      }
     }
     if allFrozen { return } // all have been processed already
     
@@ -148,13 +135,13 @@ public final class SchemaBuilder {
     //      most of those on the "new models"
     
     // This recurses into `process`, if necessary.
-    discoverTargetTypes(entitiesByType.values)
+    discoverTargetTypes(in: entities, allEntities: &entities)
 
     // Collect destination entity names in relships based on the modelType!
-    fillDestinationEntityNamesInRelationships(entitiesByType.values)
+    fillDestinationEntityNamesInRelationships(entities)
     
     // Lookup inverse relationships
-    fillInverseRelationshipData(entitiesByType.values)
+    fillInverseRelationshipData(entities)
     
     frozenTypes.formUnion(entitiesByType.keys)
   }
@@ -164,21 +151,26 @@ public final class SchemaBuilder {
    * model type they point to is already tracked as an entity.
    * Recurses until all relationships have been processed.
    */
-  private func discoverTargetTypes<S>(_ entities: S)
-    where S: Sequence, S.Element == NSEntityDescription
+  private func discoverTargetTypes(in entities: [ NSEntityDescription ],
+                                   allEntities: inout [ NSEntityDescription ])
   {
     var newEntities = [ NSEntityDescription ]()
     for entity in entities {
       for relationship in entity.relationships {
-        guard let targetType = relationship.modelType else { continue }
-        if let newEntity = processModel(targetType) {
-          newEntities.append(newEntity)
+        guard let targetType = relationship.modelType else {
+          assertionFailure("Missing type for relationship \(relationship)")
+          continue
         }
+        // This returns nil if the model is already processed.
+        guard let newEntity = processModel(targetType) else { continue }
+        
+        allEntities.append(newEntity)
+        newEntities.append(newEntity)
       }
     }
     
     if !newEntities.isEmpty { // recurse if necessary
-      discoverTargetTypes(newEntities)
+      discoverTargetTypes(in: newEntities, allEntities: &allEntities)
     }
   }
   
