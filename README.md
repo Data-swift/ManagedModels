@@ -127,24 +127,24 @@ iOS 10 / macOS 10.12 though (when `NSPersistentContainer` was introduced).
 #### TODO
 
 - [x] Archiving/Unarchiving, required for migration.
-- [ ] Figure out whether we can do ordered attributes.
-- [ ] Figure out whether we can add support for array toMany properties.
-- [ ] Support for "autosave".
-- [ ] Support transformable types, not sure they work right yet.
-- [ ] Generate property initializers if the user didn't specify any inits?
-- [ ] Generate `fetchRequest()` class function.
-- [ ] Support SchemaMigrationPlan/MigrationStage.
+- [ ] Figure out whether we can do ordered attributes: [Issue #1](https://github.com/Data-swift/ManagedModels/issues/1).
+- [ ] Figure out whether we can add support for array toMany properties: [Issue #2](https://github.com/Data-swift/ManagedModels/issues/2)
+- [ ] Support for "autosave": [Issue #3](https://github.com/Data-swift/ManagedModels/issues/3)
+- [ ] Support transformable types, not sure they work right yet: [Issue #4](https://github.com/Data-swift/ManagedModels/issues/4)
+- [ ] Generate property initializers if the user didn't specify any inits: [Issue #5](https://github.com/Data-swift/ManagedModels/issues/5)
+- [x] Generate `fetchRequest()` class function.
+- [ ] Support SchemaMigrationPlan/MigrationStage: [Issue #6](https://github.com/Data-swift/ManagedModels/issues/6)
 - [ ] Write more tests.
-- [ ] Write DocC docs.
-- [ ] Support for entity inheritance.
-- [ ] Add support for originalName/versionHash in `@Model`.
-- [ ] Generate "To Many" accessor function prototypes (`addItemToGroup` etc).
-- [ ] Foundation Predicate support (would require iOS 17+)
-  - [ ] SwiftUI `@Query` property wrapper/macro?
+- [ ] Write DocC docs: [Issue #7](https://github.com/Data-swift/ManagedModels/issues/7), [Issue #8](https://github.com/Data-swift/ManagedModels/issues/8)
+- [ ] Support for entity inheritance: [Issue #9](https://github.com/Data-swift/ManagedModels/issues/9)
+- [ ] Add support for originalName/versionHash in `@Model`: [Issue 10](https://github.com/Data-swift/ManagedModels/issues/10)
+- [ ] Generate "To Many" accessor function prototypes (`addItemToGroup` etc): [Issue 11](https://github.com/Data-swift/ManagedModels/issues/11)
+- [x] Foundation Predicate support (would require iOS 17+) - this seems actually supported by CoreData!
+  - [ ] SwiftUI `@Query` property wrapper/macro?: [Issue 12](https://github.com/Data-swift/ManagedModels/issues/12)
 - [ ] Figure out all the cloud sync options SwiftData has and whether CoreData
-      can do them.
+      can do them: [Issue 13](https://github.com/Data-swift/ManagedModels/issues/13)
 - [ ] Figure out whether we can allow initialized properties 
-      (`var title = "No Title"`).
+      (`var title = "No Title"`): [Issue 14](https://github.com/Data-swift/ManagedModels/issues/14)
 
 Pull requests are very welcome!
 Even just DocC documentation or more tests would be welcome contributions.
