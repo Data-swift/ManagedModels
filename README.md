@@ -1,5 +1,5 @@
 <h2>ManagedModels for CoreData
-  <img src="https://zeezide.com/img/lighter/Lighter256.png"
+  <img src="https://zeezide.com/img/managedmodels/ManagedModels128.png"
        align="right" width="64" height="64" />
 </h2>
 
