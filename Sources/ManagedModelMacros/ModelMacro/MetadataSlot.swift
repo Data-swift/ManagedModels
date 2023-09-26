@@ -42,10 +42,6 @@ extension ModelMacro {
       labeledExpressions.append(.init(
         label: "valueType", expression: ExprSyntax("\(valueType).self")
       ))
-      // TBD: put it in here, or not? Would also need to do it in fallback?
-      labeledExpressions.append(.init(
-        label: "defaultValue", expression: ExprSyntax("nil")
-      ))
 
       return ExprSyntax(FunctionCallExprSyntax(callee: ExprSyntax("CoreData.NSAttributeDescription")) {
         labeledExpressions

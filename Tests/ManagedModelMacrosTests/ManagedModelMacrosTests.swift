@@ -126,7 +126,7 @@ final class ModelMacroTests: XCTestCase {
     XCTAssertTrue(explodedSource.contains("static let schemaMetadata"))
     XCTAssertTrue(explodedSource.contains(
       """
-      metadata: CoreData.NSAttributeDescription(.external, originalName: "First", name: "firstname", valueType: Swift.String.self, defaultValue: nil))
+      metadata: CoreData.NSAttributeDescription(.external, originalName: "First", name: "firstname", valueType: Swift.String.self))
       """
     ))
     
@@ -282,7 +282,7 @@ final class ModelMacroTests: XCTestCase {
       """
     ))
 
-    #if true
+    #if false
     print("Exploded:---\n")
     print(explodedSource)
     print("\n-----")

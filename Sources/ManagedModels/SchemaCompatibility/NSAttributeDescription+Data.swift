@@ -238,8 +238,8 @@ public extension NSAttributeDescription {
   // a few more datapoints.
   convenience init(_ options: Option..., originalName: String? = nil,
                    hashModifier: String? = nil,
-                   name: String, valueType: Any.Type,
-                   defaultValue: Any? = nil)
+                   defaultValue: Any? = nil,
+                   name: String, valueType: Any.Type)
   {
     self.init(name: name, originalName: originalName, options: options,
               valueType: valueType, defaultValue: defaultValue,
