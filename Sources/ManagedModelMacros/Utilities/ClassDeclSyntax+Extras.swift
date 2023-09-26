@@ -35,7 +35,8 @@ extension ClassDeclSyntax {
 extension ClassDeclSyntax {
 
   func findFunctionWithName(_ name: String, isStaticOrClass: Bool,
-                            parameterCount: Int? = nil)
+                            parameterCount: Int? = nil,
+                            numberOfParametersWithoutDefaults: Int? = nil)
        -> FunctionDeclSyntax?
   {
     for member : MemberBlockItemSyntax in memberBlock.members {
@@ -47,6 +48,10 @@ extension ClassDeclSyntax {
 
       if let parameterCount {
         guard parameterCount == funcDecl.parameterCount else { continue }
+      }
+      if let numberOfParametersWithoutDefaults {
+        guard numberOfParametersWithoutDefaults ==
+                funcDecl.numberOfParametersWithoutDefaults else { continue }
       }
 
       // filter out operators and different names

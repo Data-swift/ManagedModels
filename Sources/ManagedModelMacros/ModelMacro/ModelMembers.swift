@@ -50,7 +50,8 @@ extension ModelMacro: MemberMacro { // @attached(member, names:...)
     )
 
     if classDecl.findFunctionWithName("fetchRequest", isStaticOrClass: true,
-                                      parameterCount: 0) == nil
+                                      numberOfParametersWithoutDefaults: 0)
+       == nil
     {
       let modelClassName = modelClassName.text
       newMembers.append(
