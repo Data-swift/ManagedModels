@@ -13,14 +13,18 @@ struct ModelInitializer {
   
   /// Just the keyword parts of the selector, empty for wildcard.
   let parameterKeywords : [ String ]
+  
+  let numberOfParametersWithoutDefaults : Int
 }
 
 extension Collection where Element == ModelInitializer {
 
+  /// Either has a plain `init()` or an init that has all parameters w/ a
+  /// default (e.g. `init(title: String = "")`) which can be called w/o
+  /// specifying parameters.
   var hasNoArgumentInitializer: Bool {
-    // TBD: should also check for default arguments!!
     guard !self.isEmpty else { return false }
-    return self.contains(where: { $0.parameterKeywords.isEmpty })
+    return self.contains(where: { $0.numberOfParametersWithoutDefaults == 0 })
   }
 
   var hasDesignatedInitializers: Bool {
@@ -54,17 +58,23 @@ extension ModelMacro {
         continue
       }
       
+      var numberOfParametersWithoutDefaults = 0
       var keywords = [ String ]()
       for parameter : FunctionParameterSyntax
             in initDecl.signature.parameterClause.parameters
       {
         if parameter.firstName.tokenKind == .wildcard { keywords.append("") }
         else { keywords.append(parameter.firstName.trimmedDescription) }
+        
+        if parameter.defaultValue == nil {
+          numberOfParametersWithoutDefaults += 1
+        }
       }
       
       initializers.append(ModelInitializer(
         isConvenience: initDecl.isConvenience,
-        parameterKeywords: keywords
+        parameterKeywords: keywords,
+        numberOfParametersWithoutDefaults: numberOfParametersWithoutDefaults
       ))
     }
     return initializers
