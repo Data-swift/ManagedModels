@@ -96,6 +96,9 @@ struct ContentView: View {
 > It doesn't try to hide CoreData, but rather provides utilities to work *with*
 > CoreData in a similar way to SwiftData.
 
+A full To-Do list application example:
+[ManagedToDos.app](https://github.com/Data-swift/ManagedToDosApp).
+
 
 #### Requirements
 
@@ -159,6 +162,8 @@ Even just DocC documentation or more tests would be welcome contributions.
 
 #### Links
 
+- [ManagedModels](https://github.com/Data-swift/ManagedModels/)
+- [ManagedToDos.app](https://github.com/Data-swift/ManagedToDosApp)
 - Apple:
   - [CoreData](https://developer.apple.com/documentation/coredata)
   - [SwiftData](https://developer.apple.com/documentation/swiftdata)
@@ -169,9 +174,9 @@ Even just DocC documentation or more tests would be welcome contributions.
     - [Developer Guide](https://developer.apple.com/library/archive/documentation/LegacyTechnologies/WebObjects/WebObjects_4.5/System/Documentation/Developer/EnterpriseObjects/DevGuide/EOFDevGuide.pdf)
 - [Lighter.swift](https://github.com/Lighter-swift), typesafe and superfast 
   [SQLite](https://www.sqlite.org) Swift tooling.
-- [ZeeQL](http://zeeql.io), prototype of an [EOF](https://en.wikipedia.org/wiki/Enterprise_Objects_Framework) for Swift,
+- [ZeeQL](http://zeeql.io), prototype of an 
+  [EOF](https://en.wikipedia.org/wiki/Enterprise_Objects_Framework) for Swift,
   with many database backends.
-  
 
 
 #### Disclaimer
@@ -182,7 +187,7 @@ a part of the this project is not affiliated with Apple Inc.
 
 ### Who
 
-Models are brought to you by
+ManagedModels are brought to you by
 [Helge Heß](https://github.com/helje5/) / [ZeeZide](https://zeezide.de).
 We like feedback, GitHub stars, cool contract work, 
 presumably any form of praise you can think of.
