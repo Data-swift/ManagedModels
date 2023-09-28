@@ -13,7 +13,13 @@ public extension NSSortDescriptor {
 }
 
 /**
- * Create an NSSortDescriptor for a Swift KeyPath.
+ * Create an NSSortDescriptor for a Swift KeyPath targeting a
+ * ``PersistentModel``.
+ *
+ * - Parameters:
+ *   - keyPath: The keypath to sort on.
+ *   - order:   Does it go forward or backwards?
+ * - Returns:   An `NSSortDescriptor` reflecting the parameters.
  */
 @inlinable
 public func SortDescriptor<M, T>(_ keyPath: KeyPath<M, T>,
@@ -21,5 +27,10 @@ public func SortDescriptor<M, T>(_ keyPath: KeyPath<M, T>,
             -> NSSortDescriptor
   where M: PersistentModel & NSManagedObject
 {
-  NSSortDescriptor(keyPath: keyPath, ascending: order == .forward)
+  if let meta = M.schemaMetadata.first(where: { $0.keypath == keyPath }) {
+    NSSortDescriptor(key: meta.name, ascending: order == .forward)
+  }
+  else {
+    NSSortDescriptor(keyPath: keyPath, ascending: order == .forward)
+  }
 }
