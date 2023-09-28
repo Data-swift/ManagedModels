@@ -99,6 +99,7 @@ struct ContentView: View {
 A full To-Do list application example:
 [ManagedToDos.app](https://github.com/Data-swift/ManagedToDosApp).
 
+Blog article describing the thing: [`@Model` for CoreData](https://www.alwaysrightinstitute.com/managedmodels/).
 
 #### Requirements
 
@@ -163,7 +164,8 @@ Even just DocC documentation or more tests would be welcome contributions.
 #### Links
 
 - [ManagedModels](https://github.com/Data-swift/ManagedModels/)
-- [ManagedToDos.app](https://github.com/Data-swift/ManagedToDosApp)
+  - [ManagedToDos.app](https://github.com/Data-swift/ManagedToDosApp)
+  - Blog article: [`@Model` for CoreData](https://www.alwaysrightinstitute.com/managedmodels/)
 - Apple:
   - [CoreData](https://developer.apple.com/documentation/coredata)
   - [SwiftData](https://developer.apple.com/documentation/swiftdata)
