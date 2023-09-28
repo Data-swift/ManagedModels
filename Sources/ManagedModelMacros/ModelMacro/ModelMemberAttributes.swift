@@ -9,10 +9,10 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
 /**
- * Attaches attributes (`@NSManaged` etc) to members.
+ * Attaches attributes, `@_PersistedProperty`, to members.
  *
  * This is attached to tracked properties:
- * - `@NSManaged`
+ * - `@_PersistedProperty`
  */
 extension ModelMacro: MemberAttributeMacro { // @attached(memberAttribute)
   
@@ -30,7 +30,8 @@ extension ModelMacro: MemberAttributeMacro { // @attached(memberAttribute)
     }
 
     var properties = [ ModelProperty ]()
-    addModelProperties(in: member, to: &properties, context: context)
+    addModelProperties(in: member, to: &properties,
+                       context: context)
 
     guard let property = properties.first else { return [] } // other member
     
@@ -41,6 +42,6 @@ extension ModelMacro: MemberAttributeMacro { // @attached(memberAttribute)
     
     guard !property.isTransient else { return [] }
 
-    return [ "@NSManaged" ]
+    return [ "@_PersistedProperty" ]
   }
 }

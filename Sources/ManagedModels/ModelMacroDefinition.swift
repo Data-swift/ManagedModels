@@ -55,6 +55,14 @@ public macro Relationship(
 public macro Transient() =
   #externalMacro(module: "ManagedModelMacros", type: "TransientMacro")
 
+/**
+ * An internal helper macro. Don't use this.
+ */
+@available(swift 5.9)
+@attached(accessor, names: named(init))
+public macro _PersistedProperty() =
+  #externalMacro(module: "ManagedModelMacros", type: "PersistedPropertyMacro")
+
 
 // MARK: - Model Macro
 
