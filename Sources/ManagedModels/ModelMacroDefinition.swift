@@ -37,7 +37,10 @@ public macro Attribute(
 @attached(peer)
 public macro Relationship(
   _ options: NSRelationshipDescription.Option...,
+  deleteRule: Schema.Relationship.DeleteRule = .nullify,
+  minimumModelCount: Int? = 0, maximumModelCount: Int? = 0,
   originalName: String? = nil,
+  inverse: AnyKeyPath? = nil,
   hashModifier: String? = nil
 ) = #externalMacro(module: "ManagedModelMacros", type: "RelationshipMacro")
 
