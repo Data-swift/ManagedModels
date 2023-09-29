@@ -65,6 +65,24 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
         if setIt(for: rawType) { return }
       }
       
+      if let codableType = newValue as? any Codable.Type {
+        // TBD: Someone tell me whether this is sensible.
+        self.attributeType = .transformableAttributeType
+        self.isOptional    = newValue is any AnyOptional.Type
+        
+        func setValueClassName<T: Codable>(for type: T.Type) {
+          self.attributeValueClassName = NSStringFromClass(CodableBox<T>.self)
+          
+          let name = NSStringFromClass(CodableBox<T>.Transformer.self)
+          if !ValueTransformer.valueTransformerNames().contains(.init(name)) {
+            // no access to valueTransformerForName?
+            let transformer = CodableBox<T>.Transformer()
+            ValueTransformer
+              .setValueTransformer(transformer, forName: .init(name))
+          }
+          valueTransformerName = name
+        }
+        setValueClassName(for: codableType)
       }
 
       // TBD:
