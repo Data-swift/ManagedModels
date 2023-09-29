@@ -172,7 +172,6 @@ extension NSEntityDescription {
   {
     
     // TBD: Rather throw?
-    assert(meta.defaultValue == nil, "Relationship w/ default value?")
     if relationship.name.isEmpty { relationship.name = meta.name }
     
     if !isToOne {
