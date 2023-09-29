@@ -27,7 +27,7 @@ extension ModelMacro {
       // Note: We still want empty prop objects, because they still tell the
       //       type of a property!
       let valueType : TypeSyntax = property.valueType?
-        .replacingImplicitlyUnwrappedOptionalTypes() ?? "Any"
+        .replacingImplicitlyUnwrappedOptionalTypes().trimmed ?? "Any"
       var fallback: ExprSyntax {
         "CoreData.NSAttributeDescription(name: \(literal: property.name), valueType: \(valueType).self)"
       }
@@ -55,7 +55,7 @@ extension ModelMacro {
       // Note: We still want empty prop objects, because they still tell the
       //       type of a property!
       let valueType : TypeSyntax = property.valueType?
-        .replacingImplicitlyUnwrappedOptionalTypes() ?? "Any"
+        .replacingImplicitlyUnwrappedOptionalTypes().trimmed ?? "Any"
       var fallback: ExprSyntax {
         "CoreData.NSRelationshipDescription(name: \(literal: property.name), valueType: \(valueType).self)"
       }
