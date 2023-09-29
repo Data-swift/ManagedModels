@@ -31,7 +31,7 @@ struct ModelProperty {
     case relationship(AttributeSyntax)
     
     /// The property was explicitly tagged as an `Attribute`.
-    case attribute   (AttributeSyntax)
+    case attribute   (AttributeSyntax, isTransformable: Bool)
   }
   
   let binding           : PatternBindingSyntax
@@ -44,6 +44,17 @@ struct ModelProperty {
 
   let isTransient       : Bool
   let initExpression    : ExprSyntax?
+}
+
+extension ModelProperty {
+  
+  var isTransformable : Bool {
+    switch type {
+      case .plain           : return false
+      case .relationship(_) : return false
+      case .attribute(_, isTransformable: let value): return value
+    }
+  }
 }
 
 extension ModelProperty {
@@ -67,14 +78,14 @@ extension ModelProperty {
   
   var isKnownAttributePropertyType: Bool {
     switch type {
-      case .attribute(_)    : return true
+      case .attribute(_, _) : return true
       case .relationship(_) : return false
       case .plain: return valueType?.isKnownAttributePropertyType ?? false
     }
   }
   var isKnownRelationshipPropertyType: Bool {
     switch type {
-      case .attribute(_)    : return false
+      case .attribute(_, _) : return false
       case .relationship(_) : return true
       case .plain: return valueType?.isKnownRelationshipPropertyType ?? false
     }
@@ -100,8 +111,9 @@ extension ModelProperty.PropertyType: CustomStringConvertible {
   var description: String {
     switch self {
       case .plain           : return "plain"
-      case .attribute   (_) : return "Attribute"
       case .relationship(_) : return "Relationship"
+      case .attribute(_, isTransformable: let isTransformable) :
+        return isTransformable ? "TransformableAttribute" : "Attribute"
     }
   }
 }
@@ -222,8 +234,11 @@ extension ModelMacro {
             case "Attribute":
               switch propertyType {
                 case .plain:
-                  propertyType = .attribute(attribute)
-                case .attribute(_):
+                  propertyType = .attribute(
+                    attribute,
+                    isTransformable: isTransformableAttribute(attribute)
+                  )
+                case .attribute(_, _):
                   context.diagnose(.multipleAttributeMacrosAppliedOnProperty,
                                    on: attributes)
                 case .relationship(_):
@@ -242,7 +257,7 @@ extension ModelMacro {
                     .multipleRelationshipMacrosAppliedOnProperty,
                     on: attributes
                   )
-                case .attribute(_):
+                case .attribute(_, _):
                   context.diagnose(
                     .attributeAndRelationshipMacrosAppliedOnProperty,
                     on: attributes
@@ -257,5 +272,40 @@ extension ModelMacro {
     }
 
     return ( propertyType, isTransient )
+  }
+ 
+  // Check whether the attribute specified a `.transformable` option.
+  // Check for: `@Attribute(.transformable(by: xx))`,
+  // Signature: (_ options: Option..., originalName...)
+  private static func isTransformableAttribute(_ syntax: AttributeSyntax)
+                      -> Bool
+  {
+    guard let arguments = syntax.arguments,
+          case .argumentList(let labeledExpressions) = arguments else
+    {
+      return false
+    }
+
+    for labeledExpression in labeledExpressions {
+      guard labeledExpression.label == nil else { break }
+      
+      guard let funCall = labeledExpression.expression
+                            .as(FunctionCallExprSyntax.self),
+            let member = funCall.calledExpression
+                            .as(MemberAccessExprSyntax.self)
+      else {
+        continue
+      }
+      guard case .identifier(let name) =
+              member.declName.baseName.tokenKind else
+      {
+        continue
+      }
+      
+      // Could be more advanced :-)
+      if name == "transformable" { return true }
+    }
+    
+    return false
   }
 }

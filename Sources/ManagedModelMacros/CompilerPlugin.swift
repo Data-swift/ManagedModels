@@ -9,9 +9,10 @@ import SwiftSyntaxMacros
 @main
 struct ModelsPlugin: CompilerPlugin {
   let providingMacros: [ Macro.Type ] = [
-    TransientMacro.self,
-    AttributeMacro.self,
-    RelationshipMacro.self,
-    ModelMacro.self
+    TransientMacro        .self,
+    AttributeMacro        .self,
+    RelationshipMacro     .self,
+    PersistedPropertyMacro.self,
+    ModelMacro            .self
   ]
 }

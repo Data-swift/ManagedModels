@@ -26,10 +26,15 @@ public protocol AnyOptional {
   
   /// Returns the dynamic type of the `Wrapped` value of the optional.
   static var wrappedType : Any.Type { get }
+  
+  static var noneValue : Self { get }
 }
 
 extension Optional : AnyOptional {
-  
+
+  @inlinable
+  public static var noneValue : Self { .none }
+
   @inlinable
   public var isSome : Bool {
     switch self {
