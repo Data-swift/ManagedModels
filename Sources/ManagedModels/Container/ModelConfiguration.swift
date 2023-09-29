@@ -23,13 +23,13 @@ public struct ModelConfiguration: Hashable {
   }
   
   public init(path: String? = nil, name: String? = nil,
+              schema                      : NSManagedObjectModel? = nil,
+              isStoredInMemoryOnly        : Bool                  = false,
+              allowsSave                  : Bool                  = true,
               groupAppContainerIdentifier : String?               = nil,
               cloudKitContainerIdentifier : String?               = nil,
               groupContainer              : GroupContainer        = .none,
-              cloudKitDatabase            : CloudKitDatabase      = .none,
-              schema                      : NSManagedObjectModel? = nil,
-              allowsSave                  : Bool                  = true,
-              isStoredInMemoryOnly        : Bool                  = false)
+              cloudKitDatabase            : CloudKitDatabase      = .none)
   {
     let actualPath : String
     
@@ -114,20 +114,21 @@ public extension ModelConfiguration {
     get { URL(fileURLWithPath: path) }
   }
 
-  init(url: URL, name: String? = nil,
+  init(_ name: String? = nil, schema: Schema? = nil, url: URL,
+       isStoredInMemoryOnly: Bool = false, allowsSave: Bool = true,
        groupAppContainerIdentifier: String? = nil,
        cloudKitContainerIdentifier: String? = nil,
        groupContainer: GroupContainer = .none,
-       cloudKitDatabase: CloudKitDatabase = .none, schema: Schema? = nil,
-       allowsSave: Bool = true, isStoredInMemoryOnly: Bool = false)
+       cloudKitDatabase: CloudKitDatabase = .none)
   {
     self.init(path: url.path, name: name ?? url.lastPathComponent,
+              schema: schema, 
+              isStoredInMemoryOnly: isStoredInMemoryOnly,
+              allowsSave: allowsSave,
               groupAppContainerIdentifier: groupAppContainerIdentifier,
               cloudKitContainerIdentifier: cloudKitContainerIdentifier,
               groupContainer: groupContainer,
-              cloudKitDatabase: cloudKitDatabase,
-              schema: schema, allowsSave: allowsSave,
-              isStoredInMemoryOnly: isStoredInMemoryOnly)
+              cloudKitDatabase: cloudKitDatabase)
   }
 }
 
