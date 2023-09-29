@@ -36,20 +36,43 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
       return NSClassFromString(attributeValueClassName) ?? Any.self
     }
     set {
-      if let config = (newValue as? CoreDataPrimitiveValue.Type)?.coreDataValue
-      {
+      // Note: This needs to match up w/ PersistentModel+KVC.
+      
+      if let primitiveType = newValue as? CoreDataPrimitiveValue.Type {
+        let config = primitiveType.coreDataValue
         self.attributeType           = config.attributeType
         self.isOptional              = config.isOptional
         self.attributeValueClassName = config.attributeValueClassName
+        return
       }
-      else {
-        // TBD:
-        // undefinedAttributeType = 0
-        // transformableAttributeType = 1800
-        // objectIDAttributeType = 2000
-        // compositeAttributeType = 2100
-        assertionFailure("Unsupported Attribute value type \(newValue)")
+      
+      // This requires iOS 16:
+      //   RawRepresentable<CoreDataPrimitiveValue>
+      if let rawType = newValue as? any RawRepresentable.Type {
+        func setIt<T: RawRepresentable>(for type: T.Type) -> Bool {
+          let rawType = type.RawValue.self
+          if let primitiveType = rawType as? CoreDataPrimitiveValue.Type {
+            let config = primitiveType.coreDataValue
+            self.attributeType           = config.attributeType
+            self.isOptional              = config.isOptional
+            self.attributeValueClassName = config.attributeValueClassName
+            return true
+          }
+          else {
+            return false
+          }
+        }
+        if setIt(for: rawType) { return }
       }
+      
+      }
+
+      // TBD:
+      // undefinedAttributeType = 0
+      // transformableAttributeType = 1800
+      // objectIDAttributeType = 2000
+      // compositeAttributeType = 2100
+      assertionFailure("Unsupported Attribute value type \(newValue)")
     }
   }
 
