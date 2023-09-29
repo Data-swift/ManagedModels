@@ -78,7 +78,7 @@ extension ModelMacro {
     func metadata(for property: ModelProperty) -> ExprSyntax {
       let metaExpr : ExprSyntax? = switch property.type {
         case .plain: generateInfo(for: property)
-        case .attribute   (let attribute): 
+        case .attribute   (let attribute, isTransformable: _):
           attributeInfo   (for: property, attribute: attribute)
         case .relationship(let attribute):
           relationshipInfo(for: property, attribute: attribute)
