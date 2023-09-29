@@ -15,6 +15,16 @@ extension NSManagedObjectID: Identifiable {
   public var id: Self { self }
 }
 
+extension NSManagedObjectID: Encodable {
+  
+  @inlinable
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    try container.encode(self.uriRepresentation())
+  }
+}
+
+
 public extension NSManagedObjectID {
   
   @inlinable
