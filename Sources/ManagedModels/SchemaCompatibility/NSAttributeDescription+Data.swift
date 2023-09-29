@@ -23,172 +23,74 @@ extension CoreData.NSAttributeDescription {
 extension CoreData.NSAttributeDescription: SchemaProperty {
 
   public var valueType: Any.Type {
+    // TBD: we might actually want to hold on to the type in an assoc prop!
+    // Though I'm not sure we actually need it. Maybe we should always convert
+    // down to the CoreData base type for _this_ particular property.
+    // Its primary use is when the entity builder sets the type from the macro
+    // during construction.
     get {
-      var attributeValueType: Any.Type? {
-        guard let attributeValueClassName else { return nil }
-        return NSClassFromString(attributeValueClassName)
+      if let baseType = attributeType.swiftBaseType(isOptional: isOptional) {
+        return baseType
       }
-
-      switch attributeType { // FIXME: return Int for 32bit
-        case .integer16AttributeType  :
-          if isOptional { return Int16?  .self } else { return Int16 .self }
-        case .integer32AttributeType  :
-          if isOptional { return Int32?  .self } else { return Int32 .self }
-        case .integer64AttributeType  :
-          if isOptional { return Int?    .self } else { return Int   .self }
-        case .decimalAttributeType    :
-          if isOptional { return Decimal?.self } else { return Decimal.self }
-        case .doubleAttributeType     :
-          if isOptional { return Double? .self } else { return Double.self }
-        case .floatAttributeType      :
-          if isOptional { return Float?  .self } else { return Float .self }
-        case .stringAttributeType     :
-          if isOptional { return String? .self } else { return String.self }
-        case .booleanAttributeType    :
-          if isOptional { return Bool?   .self } else { return Bool  .self }
-        case .dateAttributeType       :
-          if isOptional { return Date?   .self } else { return Date  .self }
-        case .binaryDataAttributeType :
-          if isOptional { return Data?   .self } else { return Data  .self }
-        case .UUIDAttributeType       :
-          if isOptional { return UUID?   .self } else { return UUID  .self }
-        case .URIAttributeType        :
-          if isOptional { return URL?.self } else { return URL.self }
-        case .undefinedAttributeType, .transformableAttributeType,
-             .objectIDAttributeType:
-          return attributeValueType ?? Any.self
-        default: // for composite
-          return attributeValueType ?? Any.self
-      }
+      guard let attributeValueClassName else { return Any.self }
+      return NSClassFromString(attributeValueClassName) ?? Any.self
     }
     set {
-      if newValue == Int.self {
-        self.attributeType           = .integer64AttributeType
-        self.isOptional              = false
-        self.attributeValueClassName = "NSNumber"
+      // Note: This needs to match up w/ PersistentModel+KVC.
+      
+      if let primitiveType = newValue as? CoreDataPrimitiveValue.Type {
+        let config = primitiveType.coreDataValue
+        self.attributeType           = config.attributeType
+        self.isOptional              = config.isOptional
+        self.attributeValueClassName = config.attributeValueClassName
+        return
       }
-      else if newValue == Int?.self {
-        self.attributeType           = .integer64AttributeType
-        self.isOptional              = true
-        self.attributeValueClassName = "NSNumber"
+      
+      // This requires iOS 16:
+      //   RawRepresentable<CoreDataPrimitiveValue>
+      if let rawType = newValue as? any RawRepresentable.Type {
+        func setIt<T: RawRepresentable>(for type: T.Type) -> Bool {
+          let rawType = type.RawValue.self
+          if let primitiveType = rawType as? CoreDataPrimitiveValue.Type {
+            let config = primitiveType.coreDataValue
+            self.attributeType           = config.attributeType
+            self.isOptional              = config.isOptional
+            self.attributeValueClassName = config.attributeValueClassName
+            return true
+          }
+          else {
+            return false
+          }
+        }
+        if setIt(for: rawType) { return }
       }
-      else if newValue == String.self {
-        self.attributeType           = .stringAttributeType
-        self.isOptional              = false
-        self.attributeValueClassName = "NSString"
+      
+      if let codableType = newValue as? any Codable.Type {
+        // TBD: Someone tell me whether this is sensible.
+        self.attributeType = .transformableAttributeType
+        self.isOptional    = newValue is any AnyOptional.Type
+        
+        func setValueClassName<T: Codable>(for type: T.Type) {
+          self.attributeValueClassName = NSStringFromClass(CodableBox<T>.self)
+          
+          let name = NSStringFromClass(CodableBox<T>.Transformer.self)
+          if !ValueTransformer.valueTransformerNames().contains(.init(name)) {
+            // no access to valueTransformerForName?
+            let transformer = CodableBox<T>.Transformer()
+            ValueTransformer
+              .setValueTransformer(transformer, forName: .init(name))
+          }
+          valueTransformerName = name
+        }
+        setValueClassName(for: codableType)
       }
-      else if newValue == String?.self {
-        self.attributeType           = .stringAttributeType
-        self.isOptional              = true
-        self.attributeValueClassName = "NSString"
-      }
-      else if newValue == Bool.self {
-        self.attributeType           = .booleanAttributeType
-        self.isOptional              = false
-        self.attributeValueClassName = "NSNumber"
-      }
-      else if newValue == Bool?.self {
-        self.attributeType           = .booleanAttributeType
-        self.isOptional              = true
-        self.attributeValueClassName = "NSNumber"
-      }
-      else if newValue == Double.self {
-        self.attributeType           = .doubleAttributeType
-        self.isOptional              = false
-        self.attributeValueClassName = "NSNumber"
-      }
-      else if newValue == Double?.self {
-        self.attributeType           = .doubleAttributeType
-        self.isOptional              = true
-        self.attributeValueClassName = "NSNumber"
-      }
-      else if newValue == Date.self {
-        self.attributeType           = .dateAttributeType
-        self.isOptional              = false
-        self.attributeValueClassName = "NSDate"
-      }
-      else if newValue == Date?.self {
-        self.attributeType           = .dateAttributeType
-        self.isOptional              = true
-        self.attributeValueClassName = "NSDate"
-      }
-      else if newValue == Data.self {
-        self.attributeType           = .binaryDataAttributeType
-        self.isOptional              = false
-        self.attributeValueClassName = "NSDate"
-      }
-      else if newValue == Data?.self {
-        self.attributeType           = .binaryDataAttributeType
-        self.isOptional              = true
-        self.attributeValueClassName = "NSDate"
-      }
-      else if newValue == Float.self {
-        self.attributeType           = .floatAttributeType
-        self.isOptional              = false
-        self.attributeValueClassName = "NSNumber"
-      }
-      else if newValue == Float?.self {
-        self.attributeType           = .floatAttributeType
-        self.isOptional              = true
-        self.attributeValueClassName = "NSNumber"
-      }
-      else if newValue == Decimal.self {
-        self.attributeType           = .decimalAttributeType
-        self.isOptional              = false
-        self.attributeValueClassName = "NSDecimalNumber"
-      }
-      else if newValue == Decimal?.self {
-        self.attributeType           = .decimalAttributeType
-        self.isOptional              = true
-        self.attributeValueClassName = "NSDecimalNumber"
-      }
-      else if newValue == UUID.self {
-        self.attributeType           = .UUIDAttributeType
-        self.isOptional              = false
-        self.attributeValueClassName = "NSUUID"
-      }
-      else if newValue == UUID?.self {
-        self.attributeType           = .UUIDAttributeType
-        self.isOptional              = true
-        self.attributeValueClassName = "NSUUID"
-      }
-      else if newValue == URL.self {
-        self.attributeType           = .URIAttributeType
-        self.isOptional              = false
-        self.attributeValueClassName = "NSURL"
-      }
-      else if newValue == URL?.self {
-        self.attributeType           = .URIAttributeType
-        self.isOptional              = true
-        self.attributeValueClassName = "NSURL"
-      }
-      else if newValue == Int16.self {
-        self.attributeType           = .integer16AttributeType
-        self.isOptional              = false
-        self.attributeValueClassName = "NSNumber"
-      }
-      else if newValue == Int16?.self {
-        self.attributeType           = .integer16AttributeType
-        self.isOptional              = true
-        self.attributeValueClassName = "NSNumber"
-      }
-      else if newValue == Int32.self {
-        self.attributeType           = .integer32AttributeType
-        self.isOptional              = false
-        self.attributeValueClassName = "NSNumber"
-      }
-      else if newValue == Int32?.self {
-        self.attributeType           = .integer32AttributeType
-        self.isOptional              = true
-        self.attributeValueClassName = "NSNumber"
-      }
-      else {
-        // TBD:
-        // undefinedAttributeType = 0
-        // transformableAttributeType = 1800
-        // objectIDAttributeType = 2000
-        // compositeAttributeType = 2100
-      }
+
+      // TBD:
+      // undefinedAttributeType = 0
+      // transformableAttributeType = 1800
+      // objectIDAttributeType = 2000
+      // compositeAttributeType = 2100
+      assertionFailure("Unsupported Attribute value type \(newValue)")
     }
   }
 
@@ -238,8 +140,8 @@ public extension NSAttributeDescription {
   // a few more datapoints.
   convenience init(_ options: Option..., originalName: String? = nil,
                    hashModifier: String? = nil,
-                   name: String, valueType: Any.Type,
-                   defaultValue: Any? = nil)
+                   defaultValue: Any? = nil,
+                   name: String, valueType: Any.Type)
   {
     self.init(name: name, originalName: originalName, options: options,
               valueType: valueType, defaultValue: defaultValue,

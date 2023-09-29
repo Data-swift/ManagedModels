@@ -25,10 +25,11 @@ final class ModelMacroTests: XCTestCase {
   
   #if canImport(ManagedModelMacros)
   let macros : [ String: Macro.Type] = [
-    "Model"        : ModelMacro       .self,
-    "Attribute"    : AttributeMacro   .self,
-    "Relationship" : RelationshipMacro.self,
-    "Transient"    : TransientMacro   .self
+    "Model"              : ModelMacro            .self,
+    "Attribute"          : AttributeMacro        .self,
+    "Relationship"       : RelationshipMacro     .self,
+    "Transient"          : TransientMacro        .self,
+    "_PersistedProperty" : PersistedPropertyMacro.self
   ]
   #endif
 
@@ -63,7 +64,7 @@ final class ModelMacroTests: XCTestCase {
       "extension Person: ManagedModels.PersistentModel"))
     XCTAssertFalse(explodedSource.contains("static let x = 10"))
     XCTAssertFalse(explodedSource.contains("convenience"))
-    XCTAssertTrue (explodedSource.contains("@NSManaged"))
+    XCTAssertFalse(explodedSource.contains("@NSManaged"))
     XCTAssertTrue (explodedSource.contains("static let schemaMetadata"))
     XCTAssertTrue (explodedSource.contains(
       """
@@ -121,12 +122,12 @@ final class ModelMacroTests: XCTestCase {
     let explodedSource = explodedFile.description
     XCTAssertTrue(explodedSource.contains(
       "extension Person: ManagedModels.PersistentModel"))
-    XCTAssertTrue(explodedSource.contains("static let x = 10"))
-    XCTAssertTrue(explodedSource.contains("@NSManaged"))
-    XCTAssertTrue(explodedSource.contains("static let schemaMetadata"))
-    XCTAssertTrue(explodedSource.contains(
+    XCTAssertTrue (explodedSource.contains("static let x = 10"))
+    XCTAssertFalse(explodedSource.contains("@NSManaged"))
+    XCTAssertTrue (explodedSource.contains("static let schemaMetadata"))
+    XCTAssertTrue (explodedSource.contains(
       """
-      metadata: CoreData.NSAttributeDescription(.external, originalName: "First", name: "firstname", valueType: Swift.String.self, defaultValue: nil))
+      metadata: CoreData.NSAttributeDescription(.external, originalName: "First", name: "firstname", valueType: Swift.String.self))
       """
     ))
     
@@ -266,8 +267,7 @@ final class ModelMacroTests: XCTestCase {
     XCTAssertFalse(explodedSource.contains("convenience init(context:"))
     XCTAssertTrue (explodedSource.contains(
       """
-      @NSManaged
-        var firstname : String
+      var firstname : String
       """
     ))
     XCTAssertFalse(explodedSource.contains(
@@ -282,7 +282,7 @@ final class ModelMacroTests: XCTestCase {
       """
     ))
 
-    #if false
+    #if true
     print("Exploded:---\n")
     print(explodedSource)
     print("\n-----")

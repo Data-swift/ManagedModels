@@ -42,10 +42,6 @@ extension ModelMacro {
       labeledExpressions.append(.init(
         label: "valueType", expression: ExprSyntax("\(valueType).self")
       ))
-      // TBD: put it in here, or not? Would also need to do it in fallback?
-      labeledExpressions.append(.init(
-        label: "defaultValue", expression: ExprSyntax("nil")
-      ))
 
       return ExprSyntax(FunctionCallExprSyntax(callee: ExprSyntax("CoreData.NSAttributeDescription")) {
         labeledExpressions
@@ -82,7 +78,7 @@ extension ModelMacro {
     func metadata(for property: ModelProperty) -> ExprSyntax {
       let metaExpr : ExprSyntax? = switch property.type {
         case .plain: generateInfo(for: property)
-        case .attribute   (let attribute): 
+        case .attribute   (let attribute, isTransformable: _):
           attributeInfo   (for: property, attribute: attribute)
         case .relationship(let attribute):
           relationshipInfo(for: property, attribute: attribute)

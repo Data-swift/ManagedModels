@@ -12,13 +12,15 @@
  *                   e.g. ``Schema/Attribute/Option/unique``, or none.
  *   - originalName: The peer to CoreData's `renamingIdentifier`.
  *   - hashModifier: The peer to CoreData's `versionHashModifier`.
+ *   - defaultValue: The default value for the property.
  */
 @available(swift 5.9)
 @attached(peer)
 public macro Attribute(
   _ options: NSAttributeDescription.Option...,
   originalName: String? = nil,
-  hashModifier: String? = nil
+  hashModifier: String? = nil,
+  defaultValue: Any?    = nil
 ) = #externalMacro(module: "ManagedModelMacros", type: "AttributeMacro")
 
 
@@ -52,6 +54,14 @@ public macro Relationship(
 @attached(peer)
 public macro Transient() =
   #externalMacro(module: "ManagedModelMacros", type: "TransientMacro")
+
+/**
+ * An internal helper macro. Don't use this.
+ */
+@available(swift 5.9)
+@attached(accessor, names: named(init))
+public macro _PersistedProperty() =
+  #externalMacro(module: "ManagedModelMacros", type: "PersistedPropertyMacro")
 
 
 // MARK: - Model Macro

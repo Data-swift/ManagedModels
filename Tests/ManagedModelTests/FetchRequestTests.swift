@@ -69,6 +69,7 @@ final class FetchRequestTests: SwiftUITestCase {
     XCTAssertEqual(models.count, 3)
   }
 
+  @MainActor
   func testFetchCount() throws {
     let context = try XCTUnwrap(context)
     
@@ -81,9 +82,7 @@ final class FetchRequestTests: SwiftUITestCase {
       let expectation : XCTestExpectation
       
       @FetchRequest(
-        sortDescriptors: [
-          NSSortDescriptor(keyPath: \Address.appartment, ascending: true)
-        ],
+        sort: \Address.appartment,
         animation: .none
       )
       private var values: FetchedResults<Address>
