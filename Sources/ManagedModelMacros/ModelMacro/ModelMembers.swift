@@ -15,7 +15,6 @@ import SwiftDiagnostics
  *   named(init),           // Initializers.
  *   named(schemaMetadata), // The metadata.
  *   named(entity),         // Override the `entity()` function.
- *   named(fetchRequest),   // The fetchRequest factory
  *   named(_$entity),       // The cached the Entity
  *   named(_$originalName),
  *   named(_$hashModifier)
@@ -49,23 +48,6 @@ extension ModelMacro: MemberMacro { // @attached(member, names:...)
       initializers: findInitializers(in: classDecl)
     )
 
-    if classDecl.findFunctionWithName("fetchRequest", isStaticOrClass: true,
-                                      numberOfParametersWithoutDefaults: 0)
-       == nil
-    {
-      let modelClassName = modelClassName.text
-      newMembers.append(
-        """
-        /// Returns an `NSFetchRequest` setup for the `\(raw: modelClassName)`.
-        @nonobjc \(raw: access)class func fetchRequest() -> CoreData.NSFetchRequest<\(raw: modelClassName)> {
-            let fetchRequest = CoreData.NSFetchRequest<\(raw: modelClassName)>(entityName: "\(raw: modelClassName)")
-            fetchRequest.entity = Self._$entity
-            return fetchRequest
-        }
-        """
-      )
-    }
-    
     let metadata = generateMetadataSlot(
       access: access,
       modelClassName: modelClassName,

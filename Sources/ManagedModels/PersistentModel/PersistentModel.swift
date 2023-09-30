@@ -59,3 +59,36 @@ extension PersistentModel {
   @inlinable
   public static var _$entity : NSEntityDescription { self.entity() }
 }
+
+public extension PersistentModel {
+
+  @inlinable
+  static func fetchRequest() -> NSFetchRequest<Self> {
+    NSFetchRequest<Self>(entityName: _$entity.name ?? NSStringFromClass(self))
+  }
+  
+  @inlinable
+  static func fetchRequest<T>(filter         : NSPredicate? = nil,
+                              sortBy keyPath : KeyPath<Self, T>,
+                              order: NSSortDescriptor.SortOrder = .forward,
+                              fetchOffset    : Int? = nil,
+                              fetchLimit     : Int? = nil)
+              -> NSFetchRequest<Self>
+  {
+    let fetchRequest = Self.fetchRequest()
+    fetchRequest.predicate = filter
+    if let meta = Self.schemaMetadata.first(where: { $0.keypath == keyPath }) {
+      fetchRequest.sortDescriptors = [
+        NSSortDescriptor(key: meta.name, ascending: order == .forward)
+      ]
+    }
+    else {
+      fetchRequest.sortDescriptors = [
+        NSSortDescriptor(keyPath: keyPath, ascending: order == .forward)
+      ]
+    }
+    if let fetchOffset { fetchRequest.fetchOffset = fetchOffset }
+    if let fetchLimit  { fetchRequest.fetchLimit  = fetchLimit  }
+    return fetchRequest
+  }
+}

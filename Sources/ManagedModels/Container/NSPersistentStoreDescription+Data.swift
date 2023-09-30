@@ -24,6 +24,10 @@ extension NSPersistentStoreDescription {
     
     // TBD: options, timeout, sqlitePragmas
     
+    if !modelConfiguration.allowsSave {
+      shouldMigrateStoreAutomatically = false
+    }
+    
     shouldAddStoreAsynchronously = false
     // shouldMigrateStoreAutomatically
     // shouldInferMappingModelAutomatically
