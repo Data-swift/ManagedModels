@@ -13,6 +13,11 @@ extension NSPersistentContainer {
   //@MainActor - TBD :-)
   @inlinable
   public var mainContext : NSManagedObjectContext { viewContext }
+  
+  @inlinable
+  public var configurations : [ NSPersistentStoreDescription ] {
+    persistentStoreDescriptions
+  }
 
   convenience
   public init(for      model : NSManagedObjectModel,
