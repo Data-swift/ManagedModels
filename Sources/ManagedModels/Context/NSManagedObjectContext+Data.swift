@@ -48,7 +48,8 @@ public extension NSManagedObjectContext {
 public extension NSManagedObjectContext {
   
   @inlinable
-  func fetchCount(_ request: NSFetchRequest<NSFetchRequestResult>) throws -> Int
+  func fetchCount<T>(_ request: NSFetchRequest<T>) throws -> Int
+    where T: NSFetchRequestResult
   {
     try count(for: request)
   }
