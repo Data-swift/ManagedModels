@@ -50,7 +50,7 @@ public extension NSManagedObjectContext {
   @inlinable
   func fetchCount(_ request: NSFetchRequest<NSFetchRequestResult>) throws -> Int
   {
-    count(for: request)
+    try count(for: request)
   }
 }
 
