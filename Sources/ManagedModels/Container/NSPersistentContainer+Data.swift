@@ -34,11 +34,17 @@ extension NSPersistentContainer {
       return merged ?? model
     }()
     
+    var configurations = configurations
+    if configurations.isEmpty {
+      configurations.append(Self.defaultConfiguration)
+    }
+    
     // TBD: Is this correct? It is the container name, not the configuration
     //      name?
     let firstName = configurations.first(where: { !$0.name.isEmpty })?.name
                  ?? "ManagedModels"
 
+    assert(!configurations.isEmpty)
     self.init(
       name: firstName,
       managedObjectModel: combinedModel
@@ -66,6 +72,14 @@ extension NSPersistentContainer {
     viewContext.automaticallyMergesChangesFromParent = true
   }
 
+  private static var defaultConfiguration : ModelConfiguration {
+    .init(
+      path: nil, name: nil, schema: nil,
+      isStoredInMemoryOnly: false, allowsSave: true,
+      groupAppContainerIdentifier: nil, cloudKitContainerIdentifier: nil,
+      groupContainer: .none, cloudKitDatabase: .none
+    )
+  }
 }
 
 public extension NSPersistentContainer {
