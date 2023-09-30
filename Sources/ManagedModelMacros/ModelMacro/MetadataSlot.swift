@@ -17,7 +17,8 @@ extension ModelMacro {
     func generateInfo(for property: ModelProperty) -> ExprSyntax? {
       guard let valueType = property.valueType     else { return nil }
       guard valueType.isKnownAttributePropertyType else { return nil }
-      return "CoreData.NSAttributeDescription(name: \(literal: property.name), valueType: \(valueType).self)"
+      let cleanValueType = valueType.replacingImplicitlyUnwrappedOptionalTypes().trimmed
+      return "CoreData.NSAttributeDescription(name: \(literal: property.name), valueType: \(cleanValueType).self)"
     }
 
     func attributeInfo(for property: ModelProperty,
