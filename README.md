@@ -139,7 +139,7 @@ ManagedModels has no other dependencies.
 
 - [x] Archiving/Unarchiving, required for migration.
 - [ ] Figure out whether we can do ordered attributes: [Issue #1](https://github.com/Data-swift/ManagedModels/issues/1).
-- [ ] Figure out whether we can add support for array toMany properties: [Issue #2](https://github.com/Data-swift/ManagedModels/issues/2)
+- [x] Figure out whether we can add support for array toMany properties: [Issue #2](https://github.com/Data-swift/ManagedModels/issues/2)
 - [ ] Support for "autosave": [Issue #3](https://github.com/Data-swift/ManagedModels/issues/3)
 - [ ] Support transformable types, not sure they work right yet: [Issue #4](https://github.com/Data-swift/ManagedModels/issues/4)
 - [ ] Generate property initializers if the user didn't specify any inits: [Issue #5](https://github.com/Data-swift/ManagedModels/issues/5)
@@ -154,7 +154,7 @@ ManagedModels has no other dependencies.
   - [ ] SwiftUI `@Query` property wrapper/macro?: [Issue 12](https://github.com/Data-swift/ManagedModels/issues/12)
 - [ ] Figure out all the cloud sync options SwiftData has and whether CoreData
       can do them: [Issue 13](https://github.com/Data-swift/ManagedModels/issues/13)
-- [ ] Figure out whether we can allow initialized properties 
+- [x] Figure out whether we can allow initialized properties 
       (`var title = "No Title"`): [Issue 14](https://github.com/Data-swift/ManagedModels/issues/14)
 
 Pull requests are very welcome!

@@ -289,7 +289,85 @@ final class ModelMacroTests: XCTestCase {
     #endif
     #endif // canImport(ManagedModelMacros)
   }
-  
+
+  func testForceUnwrapType() throws {
+    #if !canImport(ManagedModelMacros)
+    throw XCTSkip("macros are only supported when running tests for the host platform")
+    #else
+    let explodedFile = parseAndExplode(
+    """
+    @Model
+    final class Address: NSManagedObject {
+      @Relationship(originalName: "ProductID")
+      var person: Person!
+    }
+    """
+    )
+    
+    // Hm, this doesn't seem to work?
+    let diags = ParseDiagnosticsGenerator.diagnostics(for: explodedFile)
+    XCTAssertTrue(diags.isEmpty)
+    if !diags.isEmpty {
+      print("DIAGS:", diags)
+    }
+
+    let explodedSource = explodedFile.description
+    XCTAssertTrue (explodedSource.contains(
+      "name: \"person\", valueType: Person?.self"
+    ))
+    XCTAssertFalse(explodedSource.contains(
+      "name: \"person\", valueType: Person!.self"
+    ))
+
+    #if false
+    print("Exploded:---\n")
+    print(explodedSource)
+    print("\n-----")
+    #endif
+    #endif // canImport(ManagedModelMacros)
+  }
+
+  func testCommentInType() throws {
+    #if !canImport(ManagedModelMacros)
+    throw XCTSkip("macros are only supported when running tests for the host platform")
+    #else
+    let explodedFile = parseAndExplode(
+    """
+    @Model
+    final class Address: NSManagedObject {
+      @Attribute(.unique, originalName: "CustomerTypeID")
+      public var typeID: String  // pkey in original
+    }
+    """
+    )
+    
+    // Hm, this doesn't seem to work?
+    let diags = ParseDiagnosticsGenerator.diagnostics(for: explodedFile)
+    XCTAssertTrue(diags.isEmpty)
+    if !diags.isEmpty {
+      print("DIAGS:", diags)
+    }
+
+    let explodedSource = explodedFile.description
+    XCTAssertTrue (explodedSource.contains(
+      """
+      originalName: "CustomerTypeID", name: "typeID", valueType: String
+      """
+    ))
+    XCTAssertFalse(explodedSource.contains(
+      """
+      originalName: "CustomerTypeID", name: "typeID", valueType: String  // pkey in original.self
+      """
+    ))
+
+    #if true
+    print("Exploded:---\n")
+    print(explodedSource)
+    print("\n-----")
+    #endif
+    #endif // canImport(ManagedModelMacros)
+  }
+
   
   // MARK: - Helper
   

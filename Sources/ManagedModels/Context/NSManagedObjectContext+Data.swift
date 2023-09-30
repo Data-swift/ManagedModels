@@ -47,6 +47,16 @@ public extension NSManagedObjectContext {
 
 public extension NSManagedObjectContext {
   
+  @inlinable
+  func fetchCount<T>(_ request: NSFetchRequest<T>) throws -> Int
+    where T: NSFetchRequestResult
+  {
+    try count(for: request)
+  }
+}
+
+public extension NSManagedObjectContext {
+  
   static let willSave = willSaveObjectsNotification
   static let didSave  = didSaveObjectsNotification
 }

@@ -17,7 +17,8 @@ extension ModelMacro {
     func generateInfo(for property: ModelProperty) -> ExprSyntax? {
       guard let valueType = property.valueType     else { return nil }
       guard valueType.isKnownAttributePropertyType else { return nil }
-      return "CoreData.NSAttributeDescription(name: \(literal: property.name), valueType: \(valueType).self)"
+      let cleanValueType = valueType.replacingImplicitlyUnwrappedOptionalTypes().trimmed
+      return "CoreData.NSAttributeDescription(name: \(literal: property.name), valueType: \(cleanValueType).self)"
     }
 
     func attributeInfo(for property: ModelProperty,
@@ -26,7 +27,8 @@ extension ModelMacro {
     {
       // Note: We still want empty prop objects, because they still tell the
       //       type of a property!
-      let valueType = property.valueType ?? "Any"
+      let valueType : TypeSyntax = property.valueType?
+        .replacingImplicitlyUnwrappedOptionalTypes().trimmed ?? "Any"
       var fallback: ExprSyntax {
         "CoreData.NSAttributeDescription(name: \(literal: property.name), valueType: \(valueType).self)"
       }
@@ -53,7 +55,8 @@ extension ModelMacro {
     {
       // Note: We still want empty prop objects, because they still tell the
       //       type of a property!
-      let valueType = property.valueType ?? "Any"
+      let valueType : TypeSyntax = property.valueType?
+        .replacingImplicitlyUnwrappedOptionalTypes().trimmed ?? "Any"
       var fallback: ExprSyntax {
         "CoreData.NSRelationshipDescription(name: \(literal: property.name), valueType: \(valueType).self)"
       }

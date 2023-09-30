@@ -44,6 +44,9 @@ public extension PersistentModel {
   /// The `NSManagedObjectID` of the model.
   @inlinable
   var persistentModelID : NSManagedObjectID { objectID }
+  
+  @inlinable
+  var id : NSManagedObjectID { persistentModelID }
 }
 
 extension PersistentModel {
