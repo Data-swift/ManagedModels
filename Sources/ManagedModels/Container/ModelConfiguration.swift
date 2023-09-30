@@ -18,7 +18,16 @@ public struct ModelConfiguration: Hashable {
   public var allowsSave                  = true
   
   public var isStoredInMemoryOnly : Bool {
-    set { path = newValue ? "/dev/null" : try! lookupDefaultPath(for: name) }
+    set {
+      if newValue {
+        path = "/dev/null"
+      }
+      else if path == "/dev/null" {
+        do    { path = try lookupDefaultPath(for: name) }
+        catch { fatalError("Could not lookup path for: \(name) \(error)") }
+      }
+      // else: preserve existing path
+    }
     get { path == "/dev/null" }
   }
   
@@ -63,7 +72,6 @@ public struct ModelConfiguration: Hashable {
     self.cloudKitDatabase            = cloudKitDatabase
     self.schema                      = schema
     self.allowsSave                  = allowsSave
-    self.isStoredInMemoryOnly        = isStoredInMemoryOnly
   }
 }
 
