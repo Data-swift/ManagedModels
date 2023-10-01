@@ -119,23 +119,31 @@ public final class SchemaBuilder {
                        entities: inout [ NSEntityDescription ])
   {
     // Note: This is called recursively
-    var allFrozen = false
+    var allFrozen = true
     
     // Create the basic entity and property data
     for modelType in modelTypes {
-      guard !isFrozen(modelType) else { continue }
+      if isFrozen(modelType) {
+        if let entity = lookupEntity(modelType) {
+          entities.append(entity)
+          continue
+        }
+        assertionFailure("Type frozen, but no entity found?")
+      }
+      
       allFrozen = false
       if let newEntity = processModel(modelType) {
         entities.append(newEntity)
       }
     }
-    if allFrozen { return } // all have been processed already
     
     // TBD: The following does too much work, we might only need the
     //      most of those on the "new models"
     
     // This recurses into `process`, if necessary.
     discoverTargetTypes(in: entities, allEntities: &entities)
+    
+    if allFrozen { return }
 
     // Collect destination entity names in relships based on the modelType!
     fillDestinationEntityNamesInRelationships(entities)
@@ -162,7 +170,16 @@ public final class SchemaBuilder {
           continue
         }
         // This returns nil if the model is already processed.
-        guard let newEntity = processModel(targetType) else { continue }
+        guard let newEntity = processModel(targetType) else { 
+          guard let existingEntity = lookupEntity(targetType) else {
+            assertionFailure("Type marked as processed, but no entity?")
+            continue
+          }
+          if !allEntities.contains(where: { $0 === existingEntity }) {
+            allEntities.append(existingEntity)
+          }
+          continue
+        }
         
         allEntities.append(newEntity)
         newEntities.append(newEntity)

@@ -98,6 +98,7 @@ final class SchemaGenerationTests: XCTestCase {
     XCTAssertFalse (lastname.isRelationship)
     XCTAssertTrue  (toAddresses.isRelationship)
     XCTAssertFalse (toAddresses.isToOneRelationship)
+    XCTAssertTrue  (toAddresses.isToMany)
     XCTAssertEqual (toAddresses.destination, "Address")
     XCTAssertNotNil(toAddresses.destinationEntity)
 
@@ -106,6 +107,7 @@ final class SchemaGenerationTests: XCTestCase {
     let toPerson = try XCTUnwrap(address.relationshipsByName["person"])
     XCTAssertTrue (toPerson.isRelationship)
     XCTAssertTrue (toPerson.isToOneRelationship)
+    XCTAssertFalse(toPerson.isToMany)
     XCTAssertEqual(toPerson.destination, "Person")
 
     XCTAssertTrue(toAddresses.destinationEntity === address)
@@ -159,10 +161,106 @@ final class SchemaGenerationTests: XCTestCase {
     XCTAssertFalse(lastname.isRelationship)
   }
   
+  func testOptionalString() throws {
+    let cache  = SchemaBuilder()
+    let schema = NSManagedObjectModel(
+      [ Fixtures.PersonAddressSchema.Person.self ],
+      schemaCache: cache
+    )
+    
+    XCTAssertEqual(schema.entities.count, 2)
+    XCTAssertEqual(schema.entitiesByName.count, 2)
+    
+    let address = try XCTUnwrap(schema.entitiesByName["Address"])
+    XCTAssertEqual(address.attributes.count, 2)
+
+    let appartment = try XCTUnwrap(address.attributesByName["appartment"])
+    XCTAssertFalse(appartment.isTransient)
+    XCTAssertFalse(appartment.isRelationship)
+    XCTAssertTrue (appartment.isAttribute)
+    XCTAssertTrue (appartment.isOptional)
+    XCTAssertEqual(appartment.attributeType, .stringAttributeType)
+
+    let street = try XCTUnwrap(address.attributesByName["street"])
+    XCTAssertFalse(street.isTransient)
+    XCTAssertFalse(street.isRelationship)
+    XCTAssertTrue (street.isAttribute)
+    XCTAssertFalse(street.isOptional)
+    XCTAssertEqual(street.attributeType, .stringAttributeType)
+  }
+  
   func testMOM() throws {
     let mom = Fixtures.PersonAddressMOM
     XCTAssertEqual(mom.entities.count, 2)
     XCTAssertNotNil(mom.entitiesByName["Person"])
     XCTAssertNotNil(mom.entitiesByName["Address"])
+  }
+  
+  func testDuplicateGeneration() throws {
+    let cache = SchemaBuilder()
+    
+    try autoreleasepool {
+      let entities = cache.lookupAllEntities(for: [
+        Fixtures.PersonAddressSchema.Person.self
+      ])
+      XCTAssertEqual(entities.count, 2)
+      
+      let address = try XCTUnwrap(
+        entities.first(where: { $0.name == "Address" })
+      )
+      XCTAssertEqual(address.attributes.count, 2)
+    }
+
+    // second run
+    try autoreleasepool {
+      let entities = cache.lookupAllEntities(for: [
+        Fixtures.PersonAddressSchema.Person.self
+      ])
+      XCTAssertEqual(entities.count, 2)
+      
+      let address = try XCTUnwrap(
+        entities.first(where: { $0.name == "Address" })
+      )
+      XCTAssertEqual(address.attributes.count, 2)
+    }
+  }
+  
+  func testOptionalBackRef() throws {
+    let cache  = SchemaBuilder()
+    let schema = NSManagedObjectModel(
+      versionedSchema: Fixtures.PersonAddressOptionalToOneSchema.self,
+      schemaCache: cache
+    )
+    
+    XCTAssertEqual(schema.entities.count, 2)
+    XCTAssertEqual(schema.entitiesByName.count, 2)
+    
+    let person  = try XCTUnwrap(schema.entitiesByName["Person"])
+    let address = try XCTUnwrap(schema.entitiesByName["Address"])
+    
+    XCTAssertTrue(person.attributes.isEmpty)
+    XCTAssertEqual(person.relationships.count, 1)
+    let toAddresses = try XCTUnwrap(person.relationshipsByName["addresses"])
+    XCTAssertTrue  (toAddresses.isRelationship)
+    XCTAssertFalse (toAddresses.isToOneRelationship)
+    XCTAssertFalse (toAddresses.isOptional)
+    XCTAssertEqual (toAddresses.destination, "Address")
+    XCTAssertNotNil(toAddresses.destinationEntity)
+
+    XCTAssertTrue(address.attributes.isEmpty)
+    XCTAssertEqual(address.relationships.count, 1)
+    let toPerson = try XCTUnwrap(address.relationshipsByName["person"])
+    XCTAssertTrue (toPerson.isRelationship)
+    XCTAssertTrue (toPerson.isOptional)
+    XCTAssertTrue (toPerson.isToOneRelationship)
+    XCTAssertEqual(toPerson.destination, "Person")
+
+    XCTAssertTrue(toAddresses.destinationEntity === address)
+    XCTAssertTrue(toPerson   .destinationEntity === person)
+
+    XCTAssertEqual(toPerson   .inverseName, "addresses")
+    XCTAssertEqual(toAddresses.inverseName, "person")
+    XCTAssertTrue (toAddresses.keypath        == toPerson.inverseKeyPath)
+    XCTAssertTrue (toAddresses.inverseKeyPath == toPerson.keypath)
   }
 }

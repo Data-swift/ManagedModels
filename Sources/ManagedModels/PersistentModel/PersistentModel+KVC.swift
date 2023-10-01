@@ -64,11 +64,11 @@ public extension PersistentModel {
 
   @inlinable
   func setValue<T>(forKey key: String, to model: T) where T: PersistentModel {
-    _setValue(forKey: key, to: model)
+    _setOptionalToOneValue(forKey: key, to: model)
   }
   @inlinable
   func getValue<T>(forKey key: String) -> T where T: PersistentModel {
-    guard let value : T = _getValue(forKey: key) else {
+    guard let value : T = _getOptionalToOneValue(forKey: key) else {
       fatalError("Non-optional toOne relationship contains nil value?!")
     }
     return value
@@ -76,11 +76,11 @@ public extension PersistentModel {
   
   @inlinable
   func setValue<T>(forKey key: String, to model: T?) where T: PersistentModel {
-    _setValue(forKey: key, to: model)
+    _setOptionalToOneValue(forKey: key, to: model)
   }
   @inlinable
   func getValue<T>(forKey key: String) -> T? where T: PersistentModel {
-    _getValue(forKey: key)
+    _getOptionalToOneValue(forKey: key)
   }
   
   // Codable disambiguation
@@ -89,13 +89,13 @@ public extension PersistentModel {
   func setValue<T>(forKey key: String, to model: T) 
     where T: PersistentModel & Encodable
   {
-    _setValue(forKey: key, to: model)
+    _setOptionalToOneValue(forKey: key, to: model)
   }
   @inlinable
   func getValue<T>(forKey key: String) -> T
     where T: PersistentModel & Encodable
   {
-    guard let value : T = _getValue(forKey: key) else {
+    guard let value : T = _getOptionalToOneValue(forKey: key) else {
       fatalError("Non-optional toOne relationship contains nil value?!")
     }
     return value
@@ -105,25 +105,49 @@ public extension PersistentModel {
   func setValue<T>(forKey key: String, to model: T?) 
     where T: PersistentModel & Encodable
   {
-    _setValue(forKey: key, to: model)
+    _setOptionalToOneValue(forKey: key, to: model)
   }
   @inlinable
   func getValue<T>(forKey key: String) -> T? 
     where T: PersistentModel & Encodable
   {
-    _getValue(forKey: key)
+    _getOptionalToOneValue(forKey: key)
   }
 
   // Primitives
 
   @inlinable
-  func _setValue<T>(forKey key: String, to model: T?) where T: PersistentModel {
+  func _setOptionalToOneValue<T>(forKey key: String, to model: T?)
+    where T: PersistentModel
+  {
+    #if DEBUG
+    let relship = Self._$entity.relationshipsByName[key]!
+    assert(!relship.isToMany, "relship: \(relship)")
+    #endif
+    if let model {
+      if model.modelContext != self.modelContext {
+        if let otherCtx = model.modelContext, self.modelContext == nil {
+          otherCtx.insert(self)
+        }
+        else if let ownCtx = self.modelContext, model.modelContext == nil {
+          ownCtx.insert(model)
+        }
+      }
+    }
+    
     willChangeValue(forKey: key); defer { didChangeValue(forKey: key) }
-    setPrimitiveValue(model, forKey: key)
+    if let model {
+      setPrimitiveValue(model, forKey: key)
+    }
+    else {
+      setPrimitiveValue(nil, forKey: key)
+    }
   }
   
   @inlinable
-  func _getValue<T>(forKey key: String) -> T? where T: PersistentModel {
+  func _getOptionalToOneValue<T>(forKey key: String) -> T?
+    where T: PersistentModel
+  {
     willAccessValue(forKey: key); defer { didAccessValue(forKey: key) }
     guard let model = primitiveValue(forKey: key) else { return nil }
     guard let typed = model as? T else {

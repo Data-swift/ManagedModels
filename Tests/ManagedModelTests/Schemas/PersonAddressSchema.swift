@@ -21,19 +21,9 @@ extension Fixtures {
     @Model
     final class Person: NSManagedObject {
       
-      // TBD: Why are the inits required? *** NEED TO FIGURE THIS OUT
       var firstname : String
       var lastname  : String
       var addresses : Set<Address> // [ Address ]
-      
-      #if false
-      init(firstname: String, lastname: String, addresses: [ Address ]) {
-        self.init() // this does not work
-        self.firstname = firstname
-        self.lastname  = lastname
-        self.addresses = addresses
-      }
-      #endif
     }
     
     @Model
