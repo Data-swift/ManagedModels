@@ -19,14 +19,9 @@ extension Fixtures {
     @Model
     final class Person: NSManagedObject, PersistentModel {
       
-      // TBD: Why are the inits required? *** NEED TO FIGURE THIS OUT
       var firstname : String
       var lastname  : String
       var addresses : [ Address ]
-      
-      // init() is a convenience initializer, it looks up the the entity for the
-      // object?
-      // Can we generate inits?
       
       init(firstname: String, lastname: String, addresses: [ Address ]) {
         super.init(entity: Self._$entity, insertInto: nil)

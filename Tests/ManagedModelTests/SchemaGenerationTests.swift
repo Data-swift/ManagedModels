@@ -98,6 +98,7 @@ final class SchemaGenerationTests: XCTestCase {
     XCTAssertFalse (lastname.isRelationship)
     XCTAssertTrue  (toAddresses.isRelationship)
     XCTAssertFalse (toAddresses.isToOneRelationship)
+    XCTAssertTrue  (toAddresses.isToMany)
     XCTAssertEqual (toAddresses.destination, "Address")
     XCTAssertNotNil(toAddresses.destinationEntity)
 
@@ -106,6 +107,7 @@ final class SchemaGenerationTests: XCTestCase {
     let toPerson = try XCTUnwrap(address.relationshipsByName["person"])
     XCTAssertTrue (toPerson.isRelationship)
     XCTAssertTrue (toPerson.isToOneRelationship)
+    XCTAssertFalse(toPerson.isToMany)
     XCTAssertEqual(toPerson.destination, "Person")
 
     XCTAssertTrue(toAddresses.destinationEntity === address)
@@ -221,5 +223,44 @@ final class SchemaGenerationTests: XCTestCase {
       )
       XCTAssertEqual(address.attributes.count, 2)
     }
+  }
+  
+  func testOptionalBackRef() throws {
+    let cache  = SchemaBuilder()
+    let schema = NSManagedObjectModel(
+      versionedSchema: Fixtures.PersonAddressOptionalToOneSchema.self,
+      schemaCache: cache
+    )
+    
+    XCTAssertEqual(schema.entities.count, 2)
+    XCTAssertEqual(schema.entitiesByName.count, 2)
+    
+    let person  = try XCTUnwrap(schema.entitiesByName["Person"])
+    let address = try XCTUnwrap(schema.entitiesByName["Address"])
+    
+    XCTAssertTrue(person.attributes.isEmpty)
+    XCTAssertEqual(person.relationships.count, 1)
+    let toAddresses = try XCTUnwrap(person.relationshipsByName["addresses"])
+    XCTAssertTrue  (toAddresses.isRelationship)
+    XCTAssertFalse (toAddresses.isToOneRelationship)
+    XCTAssertFalse (toAddresses.isOptional)
+    XCTAssertEqual (toAddresses.destination, "Address")
+    XCTAssertNotNil(toAddresses.destinationEntity)
+
+    XCTAssertTrue(address.attributes.isEmpty)
+    XCTAssertEqual(address.relationships.count, 1)
+    let toPerson = try XCTUnwrap(address.relationshipsByName["person"])
+    XCTAssertTrue (toPerson.isRelationship)
+    XCTAssertTrue (toPerson.isOptional)
+    XCTAssertTrue (toPerson.isToOneRelationship)
+    XCTAssertEqual(toPerson.destination, "Person")
+
+    XCTAssertTrue(toAddresses.destinationEntity === address)
+    XCTAssertTrue(toPerson   .destinationEntity === person)
+
+    XCTAssertEqual(toPerson   .inverseName, "addresses")
+    XCTAssertEqual(toAddresses.inverseName, "person")
+    XCTAssertTrue (toAddresses.keypath        == toPerson.inverseKeyPath)
+    XCTAssertTrue (toAddresses.inverseKeyPath == toPerson.keypath)
   }
 }

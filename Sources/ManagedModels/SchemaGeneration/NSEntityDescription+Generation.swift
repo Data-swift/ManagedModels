@@ -130,7 +130,8 @@ extension NSEntityDescription {
         
       case .toMany(collectionType: _, modelType: _):
         let relationship = CoreData.NSRelationshipDescription()
-        relationship.valueType = valueType
+        relationship.valueType  = valueType
+        relationship.isOptional = valueType is any AnyOptional.Type
         fixup(relationship, targetType: valueType, isToOne: false,
               meta: propMeta)
         assert(relationship.maxCount != 1)
@@ -174,14 +175,24 @@ extension NSEntityDescription {
     // TBD: Rather throw?
     if relationship.name.isEmpty { relationship.name = meta.name }
     
-    if !isToOne {
+    if isToOne {
+      relationship.maxCount = 1 // toOne marker!
+    }
+    else {
       // Note: In SwiftData arrays are not ordered.
       relationship.isOrdered = targetType is NSOrderedSet.Type
+      assert(relationship.maxCount != 1, "toMany w/ maxCount 1?")
     }
     
     if relationship.keypath == nil { relationship.keypath = meta.keypath }
     if relationship.valueType == Any.self {
       relationship.valueType = targetType
+    }
+    if relationship.valueType != Any.self {
+      relationship.isOptional = relationship.valueType is any AnyOptional.Type
+      if !isToOne {
+        relationship.isOrdered = relationship.valueType is NSOrderedSet.Type
+      }
     }
   }
   
