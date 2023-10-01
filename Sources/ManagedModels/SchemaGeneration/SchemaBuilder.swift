@@ -119,11 +119,17 @@ public final class SchemaBuilder {
                        entities: inout [ NSEntityDescription ])
   {
     // Note: This is called recursively
-    var allFrozen = false
+    var allFrozen = true
     
     // Create the basic entity and property data
     for modelType in modelTypes {
-      guard !isFrozen(modelType) else { continue }
+      if isFrozen(modelType) {
+        if let entity = lookupEntity(modelType) {
+          entities.append(entity)
+          continue
+        }
+        assertionFailure("Type frozen, but no entity found?")
+      }
       allFrozen = false
       if let newEntity = processModel(modelType) {
         entities.append(newEntity)
