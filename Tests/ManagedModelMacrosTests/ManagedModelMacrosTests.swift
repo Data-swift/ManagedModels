@@ -23,7 +23,7 @@ import SwiftSyntaxMacroExpansion
 
 final class ModelMacroTests: XCTestCase {
   
-  #if canImport(ManagedModelMacros)
+#if canImport(ManagedModelMacros)
   let macros : [ String: Macro.Type] = [
     "Model"              : ModelMacro            .self,
     "Attribute"          : AttributeMacro        .self,
@@ -31,12 +31,12 @@ final class ModelMacroTests: XCTestCase {
     "Transient"          : TransientMacro        .self,
     "_PersistedProperty" : PersistedPropertyMacro.self
   ]
-  #endif
-
+#endif
+  
   func testPersonAddressModels() throws {
-    #if !canImport(ManagedModelMacros)
+#if !canImport(ManagedModelMacros)
     throw XCTSkip("macros are only supported when running tests for the host platform")
-    #else
+#else
     let explodedFile = parseAndExplode(
     """
     @Model
@@ -47,7 +47,7 @@ final class ModelMacroTests: XCTestCase {
     }
     
     @Model
-    final class Address /*test*/ : NSManagedObject {      
+    final class Address /*test*/ : NSManagedObject {
       var street     : String
       var appartment : String?
       var person     : Person
@@ -58,7 +58,7 @@ final class ModelMacroTests: XCTestCase {
     // Hm, this doesn't seem to work?
     let diags = ParseDiagnosticsGenerator.diagnostics(for: explodedFile)
     XCTAssertTrue(diags.isEmpty)
-
+    
     let explodedSource = explodedFile.description
     XCTAssertTrue (explodedSource.contains(
       "extension Person: ManagedModels.PersistentModel"))
@@ -77,18 +77,18 @@ final class ModelMacroTests: XCTestCase {
       """
     ))
     
-    #if false
+#if false
     print("Exploded:---\n")
     print(explodedSource)
     print("\n-----")
-    #endif
-    #endif // canImport(ManagedModelMacros)
+#endif
+#endif // canImport(ManagedModelMacros)
   }
-
+  
   func testPersonModelWithExtras() throws {
-    #if !canImport(ManagedModelMacros)
+#if !canImport(ManagedModelMacros)
     throw XCTSkip("macros are only supported when running tests for the host platform")
-    #else
+#else
     let explodedFile = parseAndExplode(
     """
     enum MySchema {
@@ -118,7 +118,7 @@ final class ModelMacroTests: XCTestCase {
     // Hm, this doesn't seem to work?
     let diags = ParseDiagnosticsGenerator.diagnostics(for: explodedFile)
     XCTAssertTrue(diags.isEmpty)
-
+    
     let explodedSource = explodedFile.description
     XCTAssertTrue(explodedSource.contains(
       "extension Person: ManagedModels.PersistentModel"))
@@ -131,18 +131,18 @@ final class ModelMacroTests: XCTestCase {
       """
     ))
     
-    #if false
+#if false
     print("Exploded:---\n")
     print(explodedSource)
     print("\n-----")
-    #endif
-    #endif // canImport(ManagedModelMacros)
+#endif
+#endif // canImport(ManagedModelMacros)
   }
   
   func testOwnInit() throws {
-    #if !canImport(ManagedModelMacros)
+#if !canImport(ManagedModelMacros)
     throw XCTSkip("macros are only supported when running tests for the host platform")
-    #else
+#else
     let explodedFile = parseAndExplode(
     """
     @Model
@@ -172,7 +172,7 @@ final class ModelMacroTests: XCTestCase {
     if !diags.isEmpty {
       print("DIAGS:", diags)
     }
-
+    
     let explodedSource = explodedFile.description
     XCTAssertFalse(explodedSource.contains("init() {"))
     XCTAssertFalse(explodedSource.contains("convenience init(context:"))
@@ -186,20 +186,20 @@ final class ModelMacroTests: XCTestCase {
       override init(entity: CoreData.NSEntityDescription,
       """
     ))
-
-    #if false
+    
+#if false
     print("Exploded:---\n")
     print(explodedSource)
     print("\n-----")
-    #endif
-    #endif // canImport(ManagedModelMacros)
+#endif
+#endif // canImport(ManagedModelMacros)
   }
-
+  
   
   func testNoInit() throws {
-    #if !canImport(ManagedModelMacros)
+#if !canImport(ManagedModelMacros)
     throw XCTSkip("macros are only supported when running tests for the host platform")
-    #else
+#else
     let explodedFile = parseAndExplode(
     """
     @Model
@@ -217,7 +217,7 @@ final class ModelMacroTests: XCTestCase {
     if !diags.isEmpty {
       print("DIAGS:", diags)
     }
-
+    
     let explodedSource = explodedFile.description
     XCTAssertTrue (explodedSource.contains("init() {"))
     XCTAssertFalse(explodedSource.contains("convenience init(context:"))
@@ -231,19 +231,19 @@ final class ModelMacroTests: XCTestCase {
       override init(entity: CoreData.NSEntityDescription,
       """
     ))
-
-    #if false
+    
+#if false
     print("Exploded:---\n")
     print(explodedSource)
     print("\n-----")
-    #endif
-    #endif // canImport(ManagedModelMacros)
+#endif
+#endif // canImport(ManagedModelMacros)
   }
-
+  
   func testComputedProperty() throws {
-    #if !canImport(ManagedModelMacros)
+#if !canImport(ManagedModelMacros)
     throw XCTSkip("macros are only supported when running tests for the host platform")
-    #else
+#else
     let explodedFile = parseAndExplode(
     """
     @Model
@@ -261,7 +261,7 @@ final class ModelMacroTests: XCTestCase {
     if !diags.isEmpty {
       print("DIAGS:", diags)
     }
-
+    
     let explodedSource = explodedFile.description
     XCTAssertTrue (explodedSource.contains("init() {"))
     XCTAssertFalse(explodedSource.contains("convenience init(context:"))
@@ -281,19 +281,19 @@ final class ModelMacroTests: XCTestCase {
       var fullname  : String { firstname + " " + lastname }
       """
     ))
-
-    #if false
+    
+#if false
     print("Exploded:---\n")
     print(explodedSource)
     print("\n-----")
-    #endif
-    #endif // canImport(ManagedModelMacros)
+#endif
+#endif // canImport(ManagedModelMacros)
   }
-
+  
   func testForceUnwrapType() throws {
-    #if !canImport(ManagedModelMacros)
+#if !canImport(ManagedModelMacros)
     throw XCTSkip("macros are only supported when running tests for the host platform")
-    #else
+#else
     let explodedFile = parseAndExplode(
     """
     @Model
@@ -310,7 +310,7 @@ final class ModelMacroTests: XCTestCase {
     if !diags.isEmpty {
       print("DIAGS:", diags)
     }
-
+    
     let explodedSource = explodedFile.description
     XCTAssertTrue (explodedSource.contains(
       "name: \"person\", valueType: Person?.self"
@@ -318,19 +318,19 @@ final class ModelMacroTests: XCTestCase {
     XCTAssertFalse(explodedSource.contains(
       "name: \"person\", valueType: Person!.self"
     ))
-
-    #if false
+    
+#if false
     print("Exploded:---\n")
     print(explodedSource)
     print("\n-----")
-    #endif
-    #endif // canImport(ManagedModelMacros)
+#endif
+#endif // canImport(ManagedModelMacros)
   }
-
+  
   func testCommentInType() throws {
-    #if !canImport(ManagedModelMacros)
+#if !canImport(ManagedModelMacros)
     throw XCTSkip("macros are only supported when running tests for the host platform")
-    #else
+#else
     let explodedFile = parseAndExplode(
     """
     @Model
@@ -347,7 +347,7 @@ final class ModelMacroTests: XCTestCase {
     if !diags.isEmpty {
       print("DIAGS:", diags)
     }
-
+    
     let explodedSource = explodedFile.description
     XCTAssertTrue (explodedSource.contains(
       """
@@ -359,22 +359,22 @@ final class ModelMacroTests: XCTestCase {
       originalName: "CustomerTypeID", name: "typeID", valueType: String  // pkey in original.self
       """
     ))
-
-    #if false
+    
+#if false
     print("Exploded:---\n")
     print(explodedSource)
     print("\n-----")
-    #endif
-    #endif // canImport(ManagedModelMacros)
+#endif
+#endif // canImport(ManagedModelMacros)
   }
-
+  
   
   // MARK: - Helper
   
   func parseAndExplode(_ source: String) -> Syntax {
     // Parse the original source file.
     let sourceFile : SourceFileSyntax = Parser.parse(source: source)
-
+    
     // Expand all macros in the source.
     let context = BasicMacroExpansionContext(
       sourceFiles: [
@@ -384,13 +384,62 @@ final class ModelMacroTests: XCTestCase {
         )
       ]
     )
-
+    
     let explodedFile : Syntax = sourceFile.expand(
       macros: macros,
       in: context,
       indentationWidth: .spaces(2) // what else!
     )
-
+    
     return explodedFile
+  }
+  
+  // Note: This does not fail the test, but it does fail the compiler.
+  //       https://github.com/Data-swift/ManagedModels/issues/18
+  func testPersonAddressModelsWithInverse() throws {
+    #if !canImport(ManagedModelMacros)
+    throw XCTSkip("macros are only supported when running tests for the host platform")
+    #else
+    let explodedFile = parseAndExplode(
+    """
+    @Model class Person: NSManagedObject {
+      @Relationship(inverse: \\Address.person)
+      var addresses : [ Address ]
+    }
+    
+    @Model class Address: NSManagedObject {
+      @Relationship(inverse: \\Person.addresses)
+      var person : Person
+    }
+    """
+    )
+    
+    // Hm, this doesn't seem to work?
+    // It should raise the
+    // > Circular reference resolving attached macro 'Relationship'
+    // error. Maybe the
+    let diags = ParseDiagnosticsGenerator.diagnostics(for: explodedFile)
+    XCTAssertTrue(diags.isEmpty)
+
+    let explodedSource = explodedFile.description
+    XCTAssertTrue (explodedSource.contains(
+      "extension Person: ManagedModels.PersistentModel"))
+    XCTAssertTrue (explodedSource.contains(
+      """
+      metadata: CoreData.NSRelationshipDescription(inverse: \\Address.person
+      """
+    ))
+    XCTAssertTrue(explodedSource.contains(
+      """
+      metadata: CoreData.NSRelationshipDescription(inverse: \\Person.addresses, name: "person", valueType: Person.self)
+      """
+    ))
+    
+    #if false
+    print("Exploded:---\n")
+    print(explodedSource)
+    print("\n-----")
+    #endif
+    #endif // canImport(ManagedModelMacros)
   }
 }
