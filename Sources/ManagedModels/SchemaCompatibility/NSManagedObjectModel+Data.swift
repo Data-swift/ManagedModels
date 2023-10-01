@@ -58,6 +58,12 @@ private let lock = NSLock()
 private var map = [ Set<ObjectIdentifier> : NSManagedObjectModel ]()
 
 public extension NSManagedObjectModel {
+  
+  static func model(for versionedSchema: VersionedSchema.Type) 
+              -> NSManagedObjectModel
+  {
+    model(for: versionedSchema.models)
+  }
 
   /// A cached version of the initializer.
   static func model(for types: [ any PersistentModel.Type ])
