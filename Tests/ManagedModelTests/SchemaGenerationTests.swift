@@ -193,4 +193,33 @@ final class SchemaGenerationTests: XCTestCase {
     XCTAssertNotNil(mom.entitiesByName["Person"])
     XCTAssertNotNil(mom.entitiesByName["Address"])
   }
+  
+  func testDuplicateGeneration() throws {
+    let cache = SchemaBuilder()
+    
+    try autoreleasepool {
+      let entities = cache.lookupAllEntities(for: [
+        Fixtures.PersonAddressSchema.Person.self
+      ])
+      XCTAssertEqual(entities.count, 2)
+      
+      let address = try XCTUnwrap(
+        entities.first(where: { $0.name == "Address" })
+      )
+      XCTAssertEqual(address.attributes.count, 2)
+    }
+
+    // second run
+    try autoreleasepool {
+      let entities = cache.lookupAllEntities(for: [
+        Fixtures.PersonAddressSchema.Person.self
+      ])
+      XCTAssertEqual(entities.count, 2)
+      
+      let address = try XCTUnwrap(
+        entities.first(where: { $0.name == "Address" })
+      )
+      XCTAssertEqual(address.attributes.count, 2)
+    }
+  }
 }
