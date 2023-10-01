@@ -159,6 +159,34 @@ final class SchemaGenerationTests: XCTestCase {
     XCTAssertFalse(lastname.isRelationship)
   }
   
+  func testOptionalString() throws {
+    let cache  = SchemaBuilder()
+    let schema = NSManagedObjectModel(
+      [ Fixtures.PersonAddressSchema.Person.self ],
+      schemaCache: cache
+    )
+    
+    XCTAssertEqual(schema.entities.count, 2)
+    XCTAssertEqual(schema.entitiesByName.count, 2)
+    
+    let address = try XCTUnwrap(schema.entitiesByName["Address"])
+    XCTAssertEqual(address.attributes.count, 2)
+
+    let appartment = try XCTUnwrap(address.attributesByName["appartment"])
+    XCTAssertFalse(appartment.isTransient)
+    XCTAssertFalse(appartment.isRelationship)
+    XCTAssertTrue (appartment.isAttribute)
+    XCTAssertTrue (appartment.isOptional)
+    XCTAssertEqual(appartment.attributeType, .stringAttributeType)
+
+    let street = try XCTUnwrap(address.attributesByName["street"])
+    XCTAssertFalse(street.isTransient)
+    XCTAssertFalse(street.isRelationship)
+    XCTAssertTrue (street.isAttribute)
+    XCTAssertFalse(street.isOptional)
+    XCTAssertEqual(street.attributeType, .stringAttributeType)
+  }
+  
   func testMOM() throws {
     let mom = Fixtures.PersonAddressMOM
     XCTAssertEqual(mom.entities.count, 2)
