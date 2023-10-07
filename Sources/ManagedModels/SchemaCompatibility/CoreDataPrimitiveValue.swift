@@ -9,7 +9,7 @@ public extension CoreData.NSAttributeDescription {
   struct TypeConfiguration {
     let attributeType           : NSAttributeType
     let isOptional              : Bool
-    let attributeValueClassName : String
+    let attributeValueClassName : String?
   }
 }
 
@@ -37,35 +37,35 @@ extension Int: CoreDataPrimitiveValue {
   public static let coreDataValue = NSAttributeDescription.TypeConfiguration(
     attributeType           : .integer64AttributeType,
     isOptional              : false,
-    attributeValueClassName : "NSNumber"
+    attributeValueClassName : nil
   )
 }
 extension Int16: CoreDataPrimitiveValue {
   public static let coreDataValue = NSAttributeDescription.TypeConfiguration(
     attributeType           : .integer16AttributeType,
     isOptional              : false,
-    attributeValueClassName : "NSNumber"
+    attributeValueClassName : nil
   )
 }
 extension Int32: CoreDataPrimitiveValue {
   public static let coreDataValue = NSAttributeDescription.TypeConfiguration(
     attributeType           : .integer32AttributeType,
     isOptional              : false,
-    attributeValueClassName : "NSNumber"
+    attributeValueClassName : nil
   )
 }
 extension Int64: CoreDataPrimitiveValue {
   public static let coreDataValue = NSAttributeDescription.TypeConfiguration(
     attributeType           : .integer64AttributeType,
     isOptional              : false,
-    attributeValueClassName : "NSNumber"
+    attributeValueClassName : nil
   )
 }
 extension Int8: CoreDataPrimitiveValue {
   public static let coreDataValue = NSAttributeDescription.TypeConfiguration(
     attributeType           : .integer16AttributeType,
     isOptional              : false,
-    attributeValueClassName : "NSNumber"
+    attributeValueClassName : nil
   )
 }
 
@@ -91,7 +91,7 @@ extension String: CoreDataPrimitiveValue {
   public static let coreDataValue = NSAttributeDescription.TypeConfiguration(
     attributeType           : .stringAttributeType,
     isOptional              : false,
-    attributeValueClassName : "NSString"
+    attributeValueClassName : nil
   )
 }
 
@@ -99,7 +99,7 @@ extension Bool: CoreDataPrimitiveValue {
   public static let coreDataValue = NSAttributeDescription.TypeConfiguration(
     attributeType           : .booleanAttributeType,
     isOptional              : false,
-    attributeValueClassName : "NSNumber"
+    attributeValueClassName : nil
   )
 }
 
@@ -107,14 +107,14 @@ extension Double: CoreDataPrimitiveValue {
   public static let coreDataValue = NSAttributeDescription.TypeConfiguration(
     attributeType           : .doubleAttributeType,
     isOptional              : false,
-    attributeValueClassName : "NSNumber"
+    attributeValueClassName : nil
   )
 }
 extension Float: CoreDataPrimitiveValue {
   public static let coreDataValue = NSAttributeDescription.TypeConfiguration(
     attributeType           : .floatAttributeType,
     isOptional              : false,
-    attributeValueClassName : "NSNumber"
+    attributeValueClassName : nil
   )
 }
 
@@ -124,7 +124,7 @@ extension Date: CoreDataPrimitiveValue {
   public static let coreDataValue = NSAttributeDescription.TypeConfiguration(
     attributeType           : .dateAttributeType,
     isOptional              : false,
-    attributeValueClassName : "NSDate"
+    attributeValueClassName : nil
   )
 }
 
@@ -132,7 +132,7 @@ extension Data: CoreDataPrimitiveValue {
   public static let coreDataValue = NSAttributeDescription.TypeConfiguration(
     attributeType           : .binaryDataAttributeType,
     isOptional              : false,
-    attributeValueClassName : "NSDate"
+    attributeValueClassName : nil
   )
 }
 
@@ -140,7 +140,7 @@ extension Decimal: CoreDataPrimitiveValue {
   public static let coreDataValue = NSAttributeDescription.TypeConfiguration(
     attributeType           : .decimalAttributeType,
     isOptional              : false,
-    attributeValueClassName : "NSDecimalNumber"
+    attributeValueClassName : nil
   )
 }
 
@@ -148,7 +148,7 @@ extension UUID: CoreDataPrimitiveValue {
   public static let coreDataValue = NSAttributeDescription.TypeConfiguration(
     attributeType           : .UUIDAttributeType,
     isOptional              : false,
-    attributeValueClassName : "NSUUID"
+    attributeValueClassName : nil
   )
 }
 
@@ -156,6 +156,6 @@ extension URL: CoreDataPrimitiveValue {
   public static let coreDataValue = NSAttributeDescription.TypeConfiguration(
     attributeType           : .URIAttributeType,
     isOptional              : false,
-    attributeValueClassName : "NSURL"
+    attributeValueClassName : nil
   )
 }
