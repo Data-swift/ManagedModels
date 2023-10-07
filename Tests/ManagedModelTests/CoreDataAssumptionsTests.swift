@@ -20,9 +20,9 @@ final class CoreDataAssumptionsTests: XCTestCase {
     let relationship = NSRelationshipDescription()
     relationship.name = "addresses"
     //relationship.destinationEntity =
-    //  Fixtures.PersonAddressSchema.Address._$entity
+    //  Fixtures.PersonAddressSchema.Address.entity()
     //relationship.inverseRelationship =
-    //  Fixtures.PersonAddressSchema.Address._$entity.relationshipsByName["person"]
+    //  Fixtures.PersonAddressSchema.Address.entity().relationshipsByName["person"]
     
     // This just seems to be the default.
     XCTAssertTrue(relationship.isToMany)
@@ -32,9 +32,10 @@ final class CoreDataAssumptionsTests: XCTestCase {
     let relationship = NSRelationshipDescription()
     relationship.name     = "person"
     relationship.maxCount = 1 // toOne marker!
+    #if false // old
     relationship.destinationEntity =
-      Fixtures.PersonAddressSchema.Person._$entity
-    // Yes! This does not work at this point.
+      Fixtures.PersonAddressSchema.Person.entity()
+    #endif
     XCTAssertFalse(relationship.isToMany)
   }
   

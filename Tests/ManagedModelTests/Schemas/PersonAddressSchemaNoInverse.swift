@@ -24,7 +24,7 @@ extension Fixtures {
       var addresses : [ Address ]
       
       init(firstname: String, lastname: String, addresses: [ Address ]) {
-        super.init(entity: Self._$entity, insertInto: nil)
+        super.init(entity: Self.entity(), insertInto: nil)
         self.firstname = firstname
         self.lastname  = lastname
         self.addresses = addresses

@@ -42,7 +42,9 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
         let config = primitiveType.coreDataValue
         self.attributeType           = config.attributeType
         self.isOptional              = config.isOptional
-        self.attributeValueClassName = config.attributeValueClassName
+        if let newClassName = config.attributeValueClassName {
+          self.attributeValueClassName = newClassName
+        }
         return
       }
       
@@ -55,7 +57,9 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
             let config = primitiveType.coreDataValue
             self.attributeType           = config.attributeType
             self.isOptional              = config.isOptional
-            self.attributeValueClassName = config.attributeValueClassName
+            if let newClassName = config.attributeValueClassName {
+              self.attributeValueClassName = newClassName
+            }
             return true
           }
           else {

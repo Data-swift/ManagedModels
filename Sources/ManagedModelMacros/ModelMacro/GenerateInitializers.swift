@@ -42,11 +42,8 @@ extension ModelMacro {
       /// - Parameters:
       //    - entity:  An `NSEntityDescription` describing the object.
       //    - context: An `NSManagedObjectContext` the object should be inserted into.
-      @available(*, deprecated, renamed: "init(context:)",
-                 message: "Use `init(context:)` or `init()` instead.")
       \(raw: access)override init(entity: CoreData.NSEntityDescription, insertInto context: NSManagedObjectContext?)
       {
-        assert(entity === Self._$entity, "Attempt to initialize PersistentModel w/ different entity?")
         super.init(entity: entity, insertInto: context)
       }
       """
@@ -67,7 +64,7 @@ extension ModelMacro {
       /// - Parameters:
       //    - context: An `NSManagedObjectContext` the object should be inserted into.
       \(raw: access)init(context: CoreData.NSManagedObjectContext?) {
-        super.init(entity: Self._$entity, insertInto: context)
+        super.init(entity: Self.entity(), insertInto: context)
       }
       """
     )
@@ -78,7 +75,7 @@ extension ModelMacro {
         /// Initialize a `\(modelClassName)` object w/o inserting it into a
         /// context.
         \(raw: access)init() {
-          super.init(entity: Self._$entity, insertInto: nil)
+          super.init(entity: Self.entity(), insertInto: nil)
         }
         """
       )

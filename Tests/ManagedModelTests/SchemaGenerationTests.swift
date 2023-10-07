@@ -224,7 +224,34 @@ final class SchemaGenerationTests: XCTestCase {
       XCTAssertEqual(address.attributes.count, 2)
     }
   }
-  
+
+  func testDuplicateMOMGeneration() throws {
+    try autoreleasepool {
+      let model1 = NSManagedObjectModel([
+        Fixtures.PersonAddressSchema.Person.self
+      ])
+      XCTAssertEqual(model1.entities.count, 2)
+      
+      let address = try XCTUnwrap(
+        model1.entities.first(where: { $0.name == "Address" })
+      )
+      XCTAssertEqual(address.attributes.count, 2)
+    }
+
+    // second run
+    try autoreleasepool {
+      let model2 = NSManagedObjectModel([
+        Fixtures.PersonAddressSchema.Person.self
+      ])
+      XCTAssertEqual(model2.entities.count, 2)
+      
+      let address = try XCTUnwrap(
+        model2.entities.first(where: { $0.name == "Address" })
+      )
+      XCTAssertEqual(address.attributes.count, 2)
+    }
+  }
+
   func testOptionalBackRef() throws {
     let cache  = SchemaBuilder()
     let schema = NSManagedObjectModel(

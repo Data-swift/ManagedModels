@@ -16,7 +16,6 @@ final class BasicModelTests: XCTestCase {
   
   func testEntityName() throws {
     let addressType = Fixtures.PersonAddressSchema.Address.self
-    XCTAssertEqual(addressType._$entity.name, "Address")
     XCTAssertEqual(addressType.entity().name, "Address")
   }
 
