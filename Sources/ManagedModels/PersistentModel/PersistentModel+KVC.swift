@@ -120,10 +120,6 @@ public extension PersistentModel {
   func _setOptionalToOneValue<T>(forKey key: String, to model: T?)
     where T: PersistentModel
   {
-    #if DEBUG
-    let relship = Self._$entity.relationshipsByName[key]!
-    assert(!relship.isToMany, "relship: \(relship)")
-    #endif
     if let model {
       if model.modelContext != self.modelContext {
         if let otherCtx = model.modelContext, self.modelContext == nil {
