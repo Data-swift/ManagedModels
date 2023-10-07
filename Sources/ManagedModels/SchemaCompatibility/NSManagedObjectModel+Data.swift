@@ -11,12 +11,6 @@ public extension NSManagedObjectModel {
   // - encodingVersion
   // - version
   
-  @available(*, deprecated, renamed: "model(for:)", message:
-    """
-    Entities can only be used in one NSManagedObjectModel, use the `model(for:)`
-    static function to get access to s ahred, cached model.
-    """
-  )
   @inlinable
   convenience init(_ entities: NSEntityDescription...,
                    version: Schema.Version = Version(1, 0, 0))
@@ -25,12 +19,6 @@ public extension NSManagedObjectModel {
     self.entities = entities
   }
   
-  @available(*, deprecated, renamed: "model(for:)", message:
-    """
-    Entities can only be used in one NSManagedObjectModel, use the `model(for:)`
-    static function to get access to s ahred, cached model.
-    """
-  )
   convenience init(_ types: [ any PersistentModel.Type ],
                    version: Schema.Version = Version(1, 0, 0))
   {
@@ -38,12 +26,6 @@ public extension NSManagedObjectModel {
     self.entities = SchemaBuilder.shared.lookupAllEntities(for: types)
   }
   
-  @available(*, deprecated, renamed: "model(for:)", message:
-    """
-    Entities can only be used in one NSManagedObjectModel, use the `model(for:)`
-    static function to get access to s ahred, cached model.
-    """
-  )
   @inlinable
   convenience init(versionedSchema: any VersionedSchema.Type) {
     self.init(versionedSchema.models,
@@ -59,6 +41,7 @@ private var map = [ Set<ObjectIdentifier> : NSManagedObjectModel ]()
 
 public extension NSManagedObjectModel {
   
+  /// A cached version of the initializer.
   static func model(for versionedSchema: VersionedSchema.Type) 
               -> NSManagedObjectModel
   {

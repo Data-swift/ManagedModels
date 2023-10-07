@@ -42,8 +42,6 @@ extension ModelMacro {
       /// - Parameters:
       //    - entity:  An `NSEntityDescription` describing the object.
       //    - context: An `NSManagedObjectContext` the object should be inserted into.
-      @available(*, deprecated, renamed: "init(context:)",
-                 message: "Use `init(context:)` or `init()` instead.")
       \(raw: access)override init(entity: CoreData.NSEntityDescription, insertInto context: NSManagedObjectContext?)
       {
         super.init(entity: entity, insertInto: context)
