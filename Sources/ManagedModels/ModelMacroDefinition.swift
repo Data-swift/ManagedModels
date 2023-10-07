@@ -81,8 +81,6 @@ public macro _PersistedProperty() =
 @attached(member, names: // Those are the names we add
   named(init),           // Initializers.
   named(schemaMetadata), // The metadata.
-  named(entity),         // Override the `entity()` function.
-  named(_$entity),       // The cached the Entity
   named(_$originalName),
   named(_$hashModifier)
 )

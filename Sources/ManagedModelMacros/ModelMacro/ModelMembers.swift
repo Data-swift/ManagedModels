@@ -14,8 +14,6 @@ import SwiftDiagnostics
  * @attached(member, names: // Those are the names we add
  *   named(init),           // Initializers.
  *   named(schemaMetadata), // The metadata.
- *   named(entity),         // Override the `entity()` function.
- *   named(_$entity),       // The cached the Entity
  *   named(_$originalName),
  *   named(_$hashModifier)
  * )
@@ -55,17 +53,6 @@ extension ModelMacro: MemberMacro { // @attached(member, names:...)
     )
     newMembers.append(DeclSyntax(metadata))
 
-    if classDecl.findFunctionWithName("entity", isStaticOrClass: true,
-                                      parameterCount: 0) == nil
-    {
-      newMembers.append(
-        """
-        /// Returns the `NSEntityDescription` associated w/ the `PersistentModel`.
-        \(raw: access)override class func entity() -> NSEntityDescription { _$entity }
-        """
-      )
-    }
-    
     // TODO: Lookup `originalName` parameter in `macroNode`
     newMembers.append(
       """
@@ -75,15 +62,6 @@ extension ModelMacro: MemberMacro { // @attached(member, names:...)
     newMembers.append(
       """
       \(raw: access)static let _$hashModifier : String? = nil
-      """
-    )
-
-    newMembers.append(
-      """
-      /// The shared `NSEntityDescription` for the `PersistentModel`.
-      /// Never modify the referred object!
-      \(raw: access)static let _$entity =
-        ManagedModels.SchemaBuilder.shared._entity(for: \(modelClassName).self)
       """
     )
     

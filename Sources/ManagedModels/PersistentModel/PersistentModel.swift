@@ -19,16 +19,6 @@ public protocol PersistentModel: NSManagedObject, Hashable, Identifiable {
    */
   static var schemaMetadata : [ NSManagedObjectModel.PropertyMetadata ] { get }
   
-  /**
-   * Reflection data for the model.
-   *
-   * This is considered private, use a Schema to access entities, and NEVER
-   * modify the schema objects after they got setup.
-   *
-   * API DIFF: SwiftData doesn't have that, always builds dynamically.
-   */
-  static var _$entity : NSEntityDescription { get }
-    // Why have that? Cheap cache.
 
   /// The `renamingIdentifier` of the model.
   static var _$originalName : String? { get }
@@ -55,16 +45,13 @@ extension PersistentModel {
   public static var schemaMetadata : [ NSManagedObjectModel.PropertyMetadata ] {
     fatalError("Subclass needs to implement `schemaMetadata`")
   }
-  
-  @inlinable
-  public static var _$entity : NSEntityDescription { self.entity() }
 }
 
 public extension PersistentModel {
 
   @inlinable
   static func fetchRequest() -> NSFetchRequest<Self> {
-    NSFetchRequest<Self>(entityName: _$entity.name ?? NSStringFromClass(self))
+    NSFetchRequest<Self>(entityName: _typeName(Self.self, qualified: false))
   }
   
   @inlinable
