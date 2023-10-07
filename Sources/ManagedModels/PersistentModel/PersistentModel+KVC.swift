@@ -31,7 +31,15 @@ public extension PersistentModel {
     where T: Codable & CoreDataPrimitiveValue & AnyOptional
   {
     willChangeValue(forKey: key); defer { didChangeValue(forKey: key) }
-    setPrimitiveValue(value, forKey: key)
+    
+    // While `nil` is properly bridged to `NSNull`, this is still necessary
+    // because `T` is the Optional structure, NOT the value type. I think :-)
+    if value.isSome {
+      setPrimitiveValue(value.value, forKey: key)
+    }
+    else {
+      setPrimitiveValue(nil, forKey: key)
+    }
   }
   @inlinable
   func getValue<T>(forKey key: String) -> T
