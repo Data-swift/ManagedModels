@@ -67,4 +67,20 @@ final class CoreDataAssumptionsTests: XCTestCase {
     XCTAssertEqual(relationship.isOrdered, copiedRelationship.isOrdered)
     XCTAssertEqual(relationship.maxCount, copiedRelationship.maxCount)
   }
+  
+  
+  func testAttributeValueClassIsNotEmpty() throws {
+    do {
+      let attribute = NSAttributeDescription()
+      attribute.name = "Hello"
+      attribute.attributeType = .stringAttributeType
+      XCTAssertEqual(attribute.attributeValueClassName, "NSString")
+    }
+    do {
+      let attribute = NSAttributeDescription()
+      attribute.name = "Hello"
+      attribute.attributeType = .integer16AttributeType
+      XCTAssertEqual(attribute.attributeValueClassName, "NSNumber")
+    }
+  }
 }
