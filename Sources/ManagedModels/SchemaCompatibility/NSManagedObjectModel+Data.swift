@@ -23,7 +23,7 @@ public extension NSManagedObjectModel {
                    version: Schema.Version = Version(1, 0, 0))
   {
     self.init()
-    self.entities = SchemaBuilder.shared.lookupAllEntities(for: types)
+    self.entities = SchemaBuilder().lookupAllEntities(for: types)
   }
   
   @inlinable
@@ -38,6 +38,7 @@ public extension NSManagedObjectModel {
 
 private let lock = NSLock()
 private var map = [ Set<ObjectIdentifier> : NSManagedObjectModel ]()
+private let sharedBuilder = SchemaBuilder()
 
 public extension NSManagedObjectModel {
   
@@ -69,7 +70,7 @@ public extension NSManagedObjectModel {
     if let cachedMOM { mom = cachedMOM }
     else {
       mom = NSManagedObjectModel()
-      mom.entities = SchemaBuilder.shared.lookupAllEntities(for: types)
+      mom.entities = sharedBuilder.lookupAllEntities(for: types)
       map[typeIDs] = mom
     }
     lock.unlock()
