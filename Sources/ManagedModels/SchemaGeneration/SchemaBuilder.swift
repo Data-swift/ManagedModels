@@ -27,17 +27,11 @@ import CoreData
  */
 public final class SchemaBuilder {
   // Notes:
-  // - this MUST NOT call `.entity` on the model! might recurse w/ lock, this
+  // - this MUST NOT call `.entity()` on the model! might recurse w/ lock, this
   //   object is the authority!
   // - there can be multiple entities that use the same name, this spans the
   //   whole type system. E.g. when versioned schemas are used.
-  
-  /**
-   * A shared SchemaBuilder that caches `NSEntityDescription` values for
-   * ``PersistentModel`` `NSManagedObject`'s.
-   */
-  public static let shared = SchemaBuilder()
-  
+    
   private let lock = NSLock() // TODO: use better lock :-)
   
   /// ObjectIdentifier of PersistentModel type to the associated schema.
