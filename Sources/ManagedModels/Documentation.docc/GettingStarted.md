@@ -22,7 +22,8 @@ It is a conversion of the Xcode template project for CoreData.
    and press "Add Package" twice.
 
 > At some point Xcode will stop compilation and ask you to confirm that you
-> want to use the `@Model` macro provided by ManagedModels.
+> want to use the `@Model` macro provided by ManagedModels
+> ("Target 'ManagedModelMacros' must be enabled before it can be used.").
 > Confirm to continue, or review the source code of the macro first.
 
 
