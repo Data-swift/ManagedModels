@@ -25,14 +25,17 @@ public extension NSManagedObjectModel {
     /// The default value associated with the property, e.g. `""`.
     public let defaultValue : Any?
     
-    /// Either a ``Schema/Attribute`` or ``Schema/Relationship`` object (or nil
-    /// if the user didn't specify an `@Attribute` or `@Relationship` macro).
-    /// Note: This is never modified, it is treated as a template and gets
-    ///       copied when the ``Schema/Entity`` is built.
+    /**
+     * Either a ``NSAttributeDescription`` or a ``NSRelationshipDescription``
+     * object (or nil if the user didn't specify an `@Attribute` or
+     * `@Relationship` macro).
+     * Note: This is never modified, it is treated as a template and gets
+     *       copied when the `NSEntityDescription` is built.
+     */
     public let metadata     : NSPropertyDescription?
     
     /**
-     * Create a new ``Schema/PropertyMetadata`` value.
+     * Create a new ``PropertyMetadata`` value.
      *
      * - Parameters:
      *   - name:         name of the property instance variable, e.g. `street`.

@@ -3,13 +3,14 @@
 //  Copyright © 2023 ZeeZide GmbH.
 //
 
+import CoreData
+
 /**
- * Tag an `NSManagedObject` class property as a ``Schema/Attribute``
- * (vs a ``Schema/Relationship``).
+ * Tag an `NSManagedObject` class property as an "Attribute"
+ * (`NSAttributeDescription`, vs a `NSRelationshipDescription`).
  *
  * - Parameters:
- *   - options:      A set of ``Schema/Attribute/Option``s,
- *                   e.g. ``Schema/Attribute/Option/unique``, or none.
+ *   - options:      A set of attribute `Option`s, e.g. `.unique`, or none.
  *   - originalName: The peer to CoreData's `renamingIdentifier`.
  *   - hashModifier: The peer to CoreData's `versionHashModifier`.
  *   - defaultValue: The default value for the property.
@@ -17,7 +18,7 @@
 @available(swift 5.9)
 @attached(peer)
 public macro Attribute(
-  _ options: NSAttributeDescription.Option...,
+  _ options: CoreData.NSAttributeDescription.Option...,
   originalName: String? = nil,
   hashModifier: String? = nil,
   defaultValue: Any?    = nil
@@ -25,19 +26,19 @@ public macro Attribute(
 
 
 /**
- * Tag an `NSManagedObject` class property as a ``Schema/Relationship``
- * (vs a ``Schema/Attribute``).
+ * Tag an `NSManagedObject` class property as a "Relationship"
+ * (`NSRelationshipDescription` vs a `NSAttributeDescription`).
  *
  * - Parameters:
- *   - options:      A set of ``Schema/Relationship/Option``s.
+ *   - options:      A set of relationship `Option`s.
  *   - originalName: The peer to CoreData's `renamingIdentifier`.
  *   - hashModifier: The peer to CoreData's `versionHashModifier`.
  */
 @available(swift 5.9)
 @attached(peer)
 public macro Relationship(
-  _ options: NSRelationshipDescription.Option...,
-  deleteRule: Schema.Relationship.DeleteRule = .nullify,
+  _ options: CoreData.NSRelationshipDescription.Option...,
+  deleteRule: CoreData.NSRelationshipDescription.DeleteRule = .nullify,
   minimumModelCount: Int? = 0, maximumModelCount: Int? = 0,
   originalName: String? = nil,
   inverse: AnyKeyPath? = nil,
