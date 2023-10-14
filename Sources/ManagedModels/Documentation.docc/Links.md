@@ -10,6 +10,9 @@ Swift Package URL: `https://github.com/Data-swift/ManagedModels.git`
 - [ManagedModels](https://github.com/Data-swift/ManagedModels/)
   - filing [GitHub Issues](https://github.com/Data-swift/ManagedModels/issues)
 - [Managed ToDos](https://github.com/Data-swift/ManagedToDosApp/) example app
+- [Northwind for ManagedModels](https://github.com/Northwind-swift/NorthwindManagedModels) 
+  (more complex example, schema with many entities and a prefilled DB for
+   testing)
 
 
 ## Apple

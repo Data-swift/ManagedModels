@@ -160,6 +160,9 @@ Even just DocC documentation or more tests would be welcome contributions.
 - [ManagedModels](https://github.com/Data-swift/ManagedModels/)
   - [ManagedToDos.app](https://github.com/Data-swift/ManagedToDosApp)
   - Blog article: [`@Model` for CoreData](https://www.alwaysrightinstitute.com/managedmodels/)
+  - [Northwind for ManagedModels](https://github.com/Northwind-swift/NorthwindManagedModels) 
+    (more complex example, schema with many entities and a prefilled DB for
+     testing)
 - Apple:
   - [CoreData](https://developer.apple.com/documentation/coredata)
   - [SwiftData](https://developer.apple.com/documentation/swiftdata)
