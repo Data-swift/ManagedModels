@@ -3,6 +3,8 @@
        align="right" width="64" height="64" />
 </h2>
 
+**2024-01-19**: Seems to be b0rked w/ Xcode 15.2: Issue https://github.com/Data-swift/ManagedModels/issues/25
+
 > Instead of wrapping CoreData, use it directly :-)
 
 The key thing **ManagedModels** provides is a `@Model` macro, 
