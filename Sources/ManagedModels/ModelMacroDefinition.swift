@@ -63,7 +63,7 @@ public macro Transient() =
  * An internal helper macro. Don't use this.
  */
 @available(swift 5.9)
-@attached(accessor/*, names: named(init)*/)
+@attached(accessor)
 public macro _PersistedProperty() =
   #externalMacro(module: "ManagedModelMacros", type: "PersistedPropertyMacro")
 
