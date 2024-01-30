@@ -3,6 +3,8 @@
        align="right" width="64" height="64" />
 </h2>
 
+**2024-01-19**: Seems to be b0rked w/ Xcode 15.2: Issue https://github.com/Data-swift/ManagedModels/issues/25
+
 > Instead of wrapping CoreData, use it directly :-)
 
 The key thing **ManagedModels** provides is a `@Model` macro, 
@@ -160,6 +162,9 @@ Even just DocC documentation or more tests would be welcome contributions.
 - [ManagedModels](https://github.com/Data-swift/ManagedModels/)
   - [ManagedToDos.app](https://github.com/Data-swift/ManagedToDosApp)
   - Blog article: [`@Model` for CoreData](https://www.alwaysrightinstitute.com/managedmodels/)
+  - [Northwind for ManagedModels](https://github.com/Northwind-swift/NorthwindManagedModels) 
+    (more complex example, schema with many entities and a prefilled DB for
+     testing)
 - Apple:
   - [CoreData](https://developer.apple.com/documentation/coredata)
   - [SwiftData](https://developer.apple.com/documentation/swiftdata)
