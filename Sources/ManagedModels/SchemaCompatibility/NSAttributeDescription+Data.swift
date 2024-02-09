@@ -165,7 +165,11 @@ public extension NSAttributeDescription {
     if let hashModifier { versionHashModifier = hashModifier }
     if let defaultValue { self.defaultValue   = defaultValue }
     isOptional = valueType is any AnyOptional.Type
+    
+    assert(valueTransformerName == nil)
+    valueTransformerName = nil
     if valueType != Any.self { self.valueType = valueType }
+    
     setOptions(options)
   }
 }
@@ -177,7 +181,6 @@ private extension NSAttributeDescription {
     allowsExternalBinaryDataStorage   = false
     isIndexedBySpotlight              = false
     isTransient                       = false
-    valueTransformerName              = nil
     if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
       allowsCloudEncryption = false
     }
@@ -193,8 +196,10 @@ private extension NSAttributeDescription {
         case .ephemeral: isTransient = true
 
         case .transformableByName(let name):
+          assert(valueTransformerName == nil)
           valueTransformerName = name
         case .transformableByType(let type):
+          assert(valueTransformerName == nil)
           valueTransformerName = NSStringFromClass(type)
 
         case .allowsCloudEncryption: // FIXME: restrict availability

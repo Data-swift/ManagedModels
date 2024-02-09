@@ -28,6 +28,7 @@ final class CodablePropertiesTests: XCTestCase {
       defaultValue: nil
     )
     XCTAssertEqual(attribute.name, "sip")
+    XCTAssertEqual(attribute.attributeType, .transformableAttributeType)
 
     let transformerName = try XCTUnwrap(
       ValueTransformer.valueTransformerNames().first(where: {
