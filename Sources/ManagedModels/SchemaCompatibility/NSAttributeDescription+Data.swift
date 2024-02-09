@@ -84,7 +84,9 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
             ValueTransformer
               .setValueTransformer(transformer, forName: .init(name))
           }
+          assert(ValueTransformer.valueTransformerNames().contains(.init(name)))
           valueTransformerName = name
+          assert(valueTransformerName != nil)
         }
         setValueClassName(for: codableType)
         return
