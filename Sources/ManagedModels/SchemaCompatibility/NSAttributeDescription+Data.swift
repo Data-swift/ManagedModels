@@ -87,6 +87,7 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
           valueTransformerName = name
         }
         setValueClassName(for: codableType)
+        return
       }
 
       // TBD:
