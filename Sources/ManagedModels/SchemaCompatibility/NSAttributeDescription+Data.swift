@@ -92,7 +92,7 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
         return
       }
 
-        if let valueTransformerName = valueTransformerName, newValue is any NSObjectProtocol.Type {
+        if let valueTransformerName = valueTransformerName {
         self.attributeType = .transformableAttributeType
         self.isOptional    = newValue is any AnyOptional.Type
         

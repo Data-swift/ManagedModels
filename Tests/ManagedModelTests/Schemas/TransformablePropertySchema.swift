@@ -21,6 +21,8 @@ extension Fixtures {
             var expires : Date
             @Attribute(.transformable(by: AccessSIPTransformer.self))
             var sip     : AccessSIP
+            @Attribute(.transformable(by: AccessSIPTransformer.self))
+            var optionalSIP : AccessSIP?
         }
         
         class AccessSIP: NSObject {
