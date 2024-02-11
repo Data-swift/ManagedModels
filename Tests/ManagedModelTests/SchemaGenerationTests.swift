@@ -102,7 +102,7 @@ final class SchemaGenerationTests: XCTestCase {
     XCTAssertEqual (toAddresses.destination, "Address")
     XCTAssertNotNil(toAddresses.destinationEntity)
 
-    XCTAssertEqual(address.attributes.count, 2)
+    XCTAssertEqual(address.attributes.count, 3)
     XCTAssertEqual(address.relationships.count, 1)
     let toPerson = try XCTUnwrap(address.relationshipsByName["person"])
     XCTAssertTrue (toPerson.isRelationship)
@@ -172,7 +172,7 @@ final class SchemaGenerationTests: XCTestCase {
     XCTAssertEqual(schema.entitiesByName.count, 2)
     
     let address = try XCTUnwrap(schema.entitiesByName["Address"])
-    XCTAssertEqual(address.attributes.count, 2)
+    XCTAssertEqual(address.attributes.count, 3)
 
     let appartment = try XCTUnwrap(address.attributesByName["appartment"])
     XCTAssertFalse(appartment.isTransient)
@@ -187,6 +187,34 @@ final class SchemaGenerationTests: XCTestCase {
     XCTAssertTrue (street.isAttribute)
     XCTAssertFalse(street.isOptional)
     XCTAssertEqual(street.attributeType, .stringAttributeType)
+  }
+  
+  func testRawRepresentableEnum() throws {
+    let cache  = SchemaBuilder()
+    let schema = NSManagedObjectModel(
+      [ Fixtures.PersonAddressSchema.Person.self ],
+      schemaCache: cache
+    )
+    
+    XCTAssertEqual(schema.entities.count, 2)
+    XCTAssertEqual(schema.entitiesByName.count, 2)
+    
+    let address = try XCTUnwrap(schema.entitiesByName["Address"])
+    XCTAssertEqual(address.attributes.count, 3)
+        
+    let street = try XCTUnwrap(address.attributesByName["street"])
+    XCTAssertFalse(street.isTransient)
+    XCTAssertFalse(street.isRelationship)
+    XCTAssertTrue (street.isAttribute)
+    XCTAssertFalse(street.isOptional)
+    XCTAssertEqual(street.attributeType, .stringAttributeType)
+    
+    let type = try XCTUnwrap(address.attributesByName["type"])
+    XCTAssertFalse(type.isTransient)
+    XCTAssertFalse(type.isRelationship)
+    XCTAssertTrue (type.isAttribute)
+    XCTAssertFalse(type.isOptional)
+    XCTAssertEqual(type.attributeType, .integer64AttributeType)
   }
   
   func testMOM() throws {
@@ -208,7 +236,7 @@ final class SchemaGenerationTests: XCTestCase {
       let address = try XCTUnwrap(
         entities.first(where: { $0.name == "Address" })
       )
-      XCTAssertEqual(address.attributes.count, 2)
+      XCTAssertEqual(address.attributes.count, 3)
     }
 
     // second run
@@ -221,7 +249,7 @@ final class SchemaGenerationTests: XCTestCase {
       let address = try XCTUnwrap(
         entities.first(where: { $0.name == "Address" })
       )
-      XCTAssertEqual(address.attributes.count, 2)
+      XCTAssertEqual(address.attributes.count, 3)
     }
   }
 
@@ -235,7 +263,7 @@ final class SchemaGenerationTests: XCTestCase {
       let address = try XCTUnwrap(
         model1.entities.first(where: { $0.name == "Address" })
       )
-      XCTAssertEqual(address.attributes.count, 2)
+      XCTAssertEqual(address.attributes.count, 3)
     }
 
     // second run
@@ -248,7 +276,7 @@ final class SchemaGenerationTests: XCTestCase {
       let address = try XCTUnwrap(
         model2.entities.first(where: { $0.name == "Address" })
       )
-      XCTAssertEqual(address.attributes.count, 2)
+      XCTAssertEqual(address.attributes.count, 3)
     }
   }
 

@@ -57,12 +57,16 @@ final class CodableBox<T: Codable>: NSObject, NSCopying {
     }
   }
   
-  final class Transformer: ValueTransformer {
+  final class Transformer: NSSecureUnarchiveFromDataTransformer {
     
     override class func transformedValueClass() -> AnyClass {
       CodableBox<T>.self
     }
     override class func allowsReverseTransformation() -> Bool { true }
+    
+    override class var allowedTopLevelClasses: [AnyClass] {
+      [ CodableBox<T>.self, NSData.self ]
+    }
     
     override func transformedValue(_ value: Any?) -> Any? {
       // value is the box
