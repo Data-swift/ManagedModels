@@ -10,7 +10,7 @@ import CoreData
 
 final class TransformablePropertiesTests: XCTestCase {
     
-    private lazy var container = try? ModelContainer(
+    private let container = try? ModelContainer(
         for: Fixtures.TransformablePropertiesSchema.managedObjectModel,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
