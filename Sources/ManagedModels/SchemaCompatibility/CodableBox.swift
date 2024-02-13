@@ -66,7 +66,10 @@ final class CodableBox<T: Codable>: NSObject, NSCopying {
     
     override func transformedValue(_ value: Any?) -> Any? {
       // value is the box
-      guard let value else { return nil }
+      guard var value else { return nil }
+      if let baseTyped = value as? T {
+        value = CodableBox<T>(baseTyped)
+      }
       guard let typed = value as? CodableBox<T> else {
         assertionFailure("Value to be transformed is not the box? \(value)")
         return nil
@@ -77,7 +80,7 @@ final class CodableBox<T: Codable>: NSObject, NSCopying {
     override func reverseTransformedValue(_ value: Any?) -> Any? {
       guard let value else { return nil }
       guard let data = value as? Data else { return nil }
-      return CodableBox<T>(data: data)
+      return CodableBox<T>(data: data)?.value
     }
   }
 }
