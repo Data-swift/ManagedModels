@@ -371,6 +371,7 @@ final class ModelMacroTests: XCTestCase {
   
   // MARK: - Helper
   
+#if canImport(ManagedModelMacros)
   func parseAndExplode(_ source: String) -> Syntax {
     // Parse the original source file.
     let sourceFile : SourceFileSyntax = Parser.parse(source: source)
@@ -393,6 +394,7 @@ final class ModelMacroTests: XCTestCase {
     
     return explodedFile
   }
+#endif // canImport(ManagedModelMacros)
   
   // Note: This does not fail the test, but it does fail the compiler.
   //       https://github.com/Data-swift/ManagedModels/issues/18
