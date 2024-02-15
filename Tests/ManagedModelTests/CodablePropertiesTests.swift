@@ -16,6 +16,7 @@ final class CodablePropertiesTests: XCTestCase {
   )
   
   func testEntityName() throws {
+    _ = container
     let entityType = Fixtures.CodablePropertiesSchema.StoredAccess.self
     XCTAssertEqual(entityType.entity().name, "StoredAccess")
   }

@@ -223,6 +223,28 @@ public extension PersistentModel {
     }
     return wrapped
   }
+  
+  // Overloads for RawRepresentables that are ALSO Codable
+  
+  @inlinable
+  func setValue<T>(forKey key: String, to value: T)
+    where T: RawRepresentable & Codable,
+          T.RawValue: Codable & CoreDataPrimitiveValue
+  {
+    setValue(forKey: key, to: value.rawValue)
+  }
+  
+  @inlinable
+  func getValue<T>(forKey key: String) -> T
+    where T: RawRepresentable & Codable,
+          T.RawValue: Codable & CoreDataPrimitiveValue
+  {
+    let rawValue : T.RawValue = getValue(forKey: key)
+    guard let wrapped = T.init(rawValue: rawValue) else {
+      fatalError("Could not wrap raw value \(rawValue) for \(key)")
+    }
+    return wrapped
+  }
 }
 
 // MARK: - Codable
