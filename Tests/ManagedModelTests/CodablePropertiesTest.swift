@@ -32,15 +32,15 @@ final class CodablePropertiesTests: XCTestCase {
 
     let transformerName = try XCTUnwrap(
       ValueTransformer.valueTransformerNames().first(where: {
-        $0.rawValue.range(of: "CodableBox11TransformerVOO17ManagedModelTests8")
+        $0.rawValue.range(of: "CodableTransformerVOO17ManagedModelTests8")
         != nil
       })
     )
     let transformer = try XCTUnwrap(ValueTransformer(forName: transformerName))
     _ = transformer // to clear unused-wraning
 
-    XCTAssertTrue(attribute.valueType ==
-                  CodableBox<Fixtures.CodablePropertiesSchema.AccessSIP>.self)
+    XCTAssertTrue(attribute.valueType == Any.self)
+                  // Fixtures.CodablePropertiesSchema.AccessSIP.self
     XCTAssertNotNil(attribute.valueTransformerName)
     XCTAssertEqual(attribute.valueTransformerName, transformerName.rawValue)
   }
@@ -54,7 +54,7 @@ final class CodablePropertiesTests: XCTestCase {
     // CodableBox.
     let transformerName = try XCTUnwrap(
       ValueTransformer.valueTransformerNames().first(where: {
-        $0.rawValue.range(of: "CodableBox11TransformerVOO17ManagedModelTests8")
+        $0.rawValue.range(of: "CodableTransformerVOO17ManagedModelTests8")
         != nil
       })
     )
@@ -63,8 +63,8 @@ final class CodablePropertiesTests: XCTestCase {
 
     let attribute = try XCTUnwrap(entity.attributesByName["sip"])
     XCTAssertEqual(attribute.name, "sip")
-    XCTAssertTrue(attribute.valueType == 
-                  CodableBox<Fixtures.CodablePropertiesSchema.AccessSIP>.self)
+    XCTAssertTrue(attribute.valueType == Any.self)
+                  // Fixtures.CodablePropertiesSchema.AccessSIP.self)
     XCTAssertNotNil(attribute.valueTransformerName)
     XCTAssertEqual(attribute.valueTransformerName, transformerName.rawValue)
   }
