@@ -209,6 +209,10 @@ private extension NSAttributeDescription {
           assert(valueTransformerName == nil)
           attributeType = .transformableAttributeType
           valueTransformerName = name
+          if !ValueTransformer.valueTransformerNames().contains(.init(name)) {
+            print("WARNING: Named transformer is not registered: \(name)",
+                  "in attribute:", self)
+          }
         case .transformableByType(let type):
           let name = NSStringFromClass(type)
           if !ValueTransformer.valueTransformerNames().contains(.init(name)) {
