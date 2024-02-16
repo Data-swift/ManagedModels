@@ -52,7 +52,7 @@ public extension PersistentModel {
 
 // MARK: - Transformable
 public extension PersistentModel {
-
+  
   @inlinable
   func setTransformableValue(forKey key: String, to value: Any) {
     willChangeValue(forKey: key); defer { didChangeValue(forKey: key) }
@@ -63,6 +63,23 @@ public extension PersistentModel {
   func getTransformableValue<T>(forKey key: String) -> T {
     willAccessValue(forKey: key); defer { didAccessValue(forKey: key) }
     return primitiveValue(forKey: key) as! T
+  }
+  
+  @inlinable
+  func setTransformableValue(forKey key: String, to value: Any?) {
+    willChangeValue(forKey: key); defer { didChangeValue(forKey: key) }
+    setPrimitiveValue(value, forKey: key)
+  }
+  
+  @inlinable
+  func getTransformableValue<T>(forKey key: String) -> T
+         where T: AnyOptional
+  {
+    willAccessValue(forKey: key); defer { didAccessValue(forKey: key) }
+    guard let value = primitiveValue(forKey: key) else {
+      return .noneValue
+    }
+    return (value as? T) ?? .noneValue
   }
 }
 
