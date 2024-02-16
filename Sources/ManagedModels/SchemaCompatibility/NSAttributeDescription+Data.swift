@@ -40,8 +40,8 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
       
       if let primitiveType = newValue as? CoreDataPrimitiveValue.Type {
         let config = primitiveType.coreDataValue
-        self.attributeType           = config.attributeType
-        self.isOptional              = config.isOptional
+        self.attributeType = config.attributeType
+        self.isOptional    = config.isOptional
         if let newClassName = config.attributeValueClassName {
           self.attributeValueClassName = newClassName
         }
@@ -55,8 +55,8 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
           let rawType = type.RawValue.self
           if let primitiveType = rawType as? CoreDataPrimitiveValue.Type {
             let config = primitiveType.coreDataValue
-            self.attributeType           = config.attributeType
-            self.isOptional              = config.isOptional
+            self.attributeType = config.attributeType
+            self.isOptional    = config.isOptional
             if let newClassName = config.attributeValueClassName {
               self.attributeValueClassName = newClassName
             }
@@ -75,12 +75,14 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
         self.isOptional    = newValue is any AnyOptional.Type
         
         func setValueClassName<T: Codable>(for type: T.Type) {
-          self.attributeValueClassName = NSStringFromClass(CodableBox<T>.self)
+          #if false // doesn't work
+          self.attributeValueClassName = NSStringFromClass(T.self)
+          #endif
           
-          let name = NSStringFromClass(CodableBox<T>.Transformer.self)
+          let name = NSStringFromClass(CodableTransformer<T>.self)
           if !ValueTransformer.valueTransformerNames().contains(.init(name)) {
             // no access to valueTransformerForName?
-            let transformer = CodableBox<T>.Transformer()
+            let transformer = CodableTransformer<T>()
             ValueTransformer
               .setValueTransformer(transformer, forName: .init(name))
           }
@@ -89,6 +91,15 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
           assert(valueTransformerName != nil)
         }
         setValueClassName(for: codableType)
+        return
+      }
+
+        if let valueTransformerName = valueTransformerName {
+        self.attributeType = .transformableAttributeType
+        self.isOptional    = newValue is any AnyOptional.Type
+        
+        self.attributeValueClassName = NSStringFromClass(NSObject.self)
+        assert(ValueTransformer.valueTransformerNames().contains(.init(valueTransformerName)))
         return
       }
 
@@ -168,9 +179,8 @@ public extension NSAttributeDescription {
     
     assert(valueTransformerName == nil)
     valueTransformerName = nil
-    if valueType != Any.self { self.valueType = valueType }
-    
     setOptions(options)
+    if valueType != Any.self { self.valueType = valueType }
   }
 }
 
@@ -197,10 +207,22 @@ private extension NSAttributeDescription {
 
         case .transformableByName(let name):
           assert(valueTransformerName == nil)
+          attributeType = .transformableAttributeType
           valueTransformerName = name
+          if !ValueTransformer.valueTransformerNames().contains(.init(name)) {
+            print("WARNING: Named transformer is not registered: \(name)",
+                  "in attribute:", self)
+          }
         case .transformableByType(let type):
-          assert(valueTransformerName == nil)
-          valueTransformerName = NSStringFromClass(type)
+          let name = NSStringFromClass(type)
+          if !ValueTransformer.valueTransformerNames().contains(.init(name)) {
+              // no access to valueTransformerForName?
+              let transformer = type.init()
+              ValueTransformer
+                  .setValueTransformer(transformer, forName: .init(name))
+          }
+          valueTransformerName = name
+          attributeType = .transformableAttributeType
 
         case .allowsCloudEncryption: // FIXME: restrict availability
           if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {

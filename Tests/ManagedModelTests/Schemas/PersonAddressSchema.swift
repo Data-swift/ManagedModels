@@ -26,20 +26,26 @@ extension Fixtures {
       var addresses : Set<Address> // [ Address ]
     }
     
+    enum AddressType: Int {
+        case home, work
+    }
+    
     @Model
     final class Address /*test*/ : NSManagedObject {
       
       var street     : String
       var appartment : String?
+      var type       : AddressType
       var person     : Person
       
       // Either: super.init(entity: Self.entity(), insertInto: nil)
       // Or:     mark this as `convenience`
-      convenience init(street: String, appartment: String? = nil, person: Person) {
+      convenience init(street: String, appartment: String? = nil, type: AddressType, person: Person) {
         //super.init(entity: Self.entity(), insertInto: nil)
         self.init()
         self.street     = street
         self.appartment = appartment
+        self.type       = type
         self.person     = person
       }
     }
