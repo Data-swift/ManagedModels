@@ -92,6 +92,15 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
         return
       }
 
+        if let valueTransformerName = valueTransformerName {
+        self.attributeType = .transformableAttributeType
+        self.isOptional    = newValue is any AnyOptional.Type
+        
+        self.attributeValueClassName = NSStringFromClass(NSObject.self)
+        assert(ValueTransformer.valueTransformerNames().contains(.init(valueTransformerName)))
+        return
+      }
+
       // TBD:
       // undefinedAttributeType = 0
       // transformableAttributeType = 1800
@@ -168,9 +177,8 @@ public extension NSAttributeDescription {
     
     assert(valueTransformerName == nil)
     valueTransformerName = nil
-    if valueType != Any.self { self.valueType = valueType }
-    
     setOptions(options)
+    if valueType != Any.self { self.valueType = valueType }
   }
 }
 
@@ -196,11 +204,17 @@ private extension NSAttributeDescription {
         case .ephemeral: isTransient = true
 
         case .transformableByName(let name):
-          assert(valueTransformerName == nil)
-          valueTransformerName = name
+          fatalError("Not supported")
         case .transformableByType(let type):
           assert(valueTransformerName == nil)
-          valueTransformerName = NSStringFromClass(type)
+          let name = NSStringFromClass(type)
+          if !ValueTransformer.valueTransformerNames().contains(.init(name)) {
+              // no access to valueTransformerForName?
+              let transformer = type.init()
+              ValueTransformer
+                  .setValueTransformer(transformer, forName: .init(name))
+          }
+          valueTransformerName = name
 
         case .allowsCloudEncryption: // FIXME: restrict availability
           if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
