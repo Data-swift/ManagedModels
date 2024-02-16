@@ -254,14 +254,14 @@ public extension PersistentModel {
   
   func setValue<T>(forKey key: String, to value: T) where T: Codable {
     willChangeValue(forKey: key); defer { didChangeValue(forKey: key) }
-    setPrimitiveValue(CodableBox<T>(value), forKey: key)
+    setPrimitiveValue(value, forKey: key)
   }
   
   func setValue<T>(forKey key: String, to value: T)
          where T: Codable & AnyOptional
   {
     willChangeValue(forKey: key); defer { didChangeValue(forKey: key) }
-    if value.isSome { setPrimitiveValue(CodableBox<T>(value), forKey: key) }
+    if value.isSome { setPrimitiveValue(value, forKey: key) }
     else { setPrimitiveValue(nil, forKey: key) }
   }
 
@@ -271,10 +271,7 @@ public extension PersistentModel {
       fatalError("No box found for non-optional Codable value for key \(key)?")
     }
     
-    if let box = value as? CodableBox<T> {
-      guard let value = box.value else {
-        fatalError("Box has no value for non-optional Codable for key \(key)?")
-      }
+    if let value = value as? T {
       return value
     }
     
@@ -288,17 +285,13 @@ public extension PersistentModel {
       }
     }
     
-    guard let value = value as? T else {
-      fatalError("Unexpected value for key \(key)? \(value)")
-    }
-    assertionFailure("Codable value is directly stored? \(value)")
-    return value
+    fatalError("Codable value type doesn't match? \(value)")
   }
   
   func getValue<T>(forKey key: String) -> T where T: Codable & AnyOptional {
     willAccessValue(forKey: key); defer { didAccessValue(forKey: key) }
     guard let value = primitiveValue(forKey: key) else { return .noneValue }
-    if let box = value as? CodableBox<T> { return box.value ?? .noneValue }
+    if let value = value as? T { return value }
     
     if let data = value as? Data {
       assertionFailure("Unexpected Data as primitive!")
@@ -313,7 +306,7 @@ public extension PersistentModel {
     guard let value = value as? T else {
       fatalError("Unexpected value for key \(key)? \(value)")
     }
-    assertionFailure("Codable value is directly stored? \(value)")
-    return value
+    assertionFailure("Codable value type doesn't match? \(value)")
+    return .noneValue
   }
 }

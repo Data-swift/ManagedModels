@@ -40,8 +40,8 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
       
       if let primitiveType = newValue as? CoreDataPrimitiveValue.Type {
         let config = primitiveType.coreDataValue
-        self.attributeType           = config.attributeType
-        self.isOptional              = config.isOptional
+        self.attributeType = config.attributeType
+        self.isOptional    = config.isOptional
         if let newClassName = config.attributeValueClassName {
           self.attributeValueClassName = newClassName
         }
@@ -55,8 +55,8 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
           let rawType = type.RawValue.self
           if let primitiveType = rawType as? CoreDataPrimitiveValue.Type {
             let config = primitiveType.coreDataValue
-            self.attributeType           = config.attributeType
-            self.isOptional              = config.isOptional
+            self.attributeType = config.attributeType
+            self.isOptional    = config.isOptional
             if let newClassName = config.attributeValueClassName {
               self.attributeValueClassName = newClassName
             }
@@ -75,12 +75,14 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
         self.isOptional    = newValue is any AnyOptional.Type
         
         func setValueClassName<T: Codable>(for type: T.Type) {
-          self.attributeValueClassName = NSStringFromClass(CodableBox<T>.self)
+          #if false // doesn't work
+          self.attributeValueClassName = NSStringFromClass(T.self)
+          #endif
           
-          let name = NSStringFromClass(CodableBox<T>.Transformer.self)
+          let name = NSStringFromClass(CodableTransformer<T>.self)
           if !ValueTransformer.valueTransformerNames().contains(.init(name)) {
             // no access to valueTransformerForName?
-            let transformer = CodableBox<T>.Transformer()
+            let transformer = CodableTransformer<T>()
             ValueTransformer
               .setValueTransformer(transformer, forName: .init(name))
           }
