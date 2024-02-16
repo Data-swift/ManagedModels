@@ -206,9 +206,10 @@ private extension NSAttributeDescription {
         case .ephemeral: isTransient = true
 
         case .transformableByName(let name):
-          fatalError("Not supported")
-        case .transformableByType(let type):
           assert(valueTransformerName == nil)
+          attributeType = .transformableAttributeType
+          valueTransformerName = name
+        case .transformableByType(let type):
           let name = NSStringFromClass(type)
           if !ValueTransformer.valueTransformerNames().contains(.init(name)) {
               // no access to valueTransformerForName?
@@ -217,6 +218,7 @@ private extension NSAttributeDescription {
                   .setValueTransformer(transformer, forName: .init(name))
           }
           valueTransformerName = name
+          attributeType = .transformableAttributeType
 
         case .allowsCloudEncryption: // FIXME: restrict availability
           if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
