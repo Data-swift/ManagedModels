@@ -6,7 +6,7 @@
 import CoreData
 
 public extension CoreData.NSAttributeDescription {
-  struct TypeConfiguration {
+	struct TypeConfiguration: Sendable {
     let attributeType           : NSAttributeType
     let isOptional              : Bool
     let attributeValueClassName : String?
