@@ -13,7 +13,13 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0")
   ],
   targets: [
-    .target(name: "ManagedModels", dependencies: [ "ManagedModelMacros" ]),
+    .target(
+      name: "ManagedModels",
+      dependencies: [ "ManagedModelMacros" ],
+      swiftSettings: [
+        .enableExperimentalFeature("StrictConcurrency")
+      ]
+    ),
   
     .macro(
       name: "ManagedModelMacros",
