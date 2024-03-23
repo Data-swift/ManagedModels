@@ -113,7 +113,7 @@ public extension Scene {
 // MARK: - Primitive
 
 // Note: The docs say that a container is only ever created once! So cache it.
-private var modelToContainer = [ ObjectIdentifier: NSPersistentContainer ]()
+nonisolated(unsafe) private var modelToContainer = [ ObjectIdentifier: NSPersistentContainer ]()
 
 private func makeModelContainer(
   for    modelTypes : [ any PersistentModel.Type ],

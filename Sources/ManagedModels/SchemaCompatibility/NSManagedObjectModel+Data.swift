@@ -37,8 +37,8 @@ public extension NSManagedObjectModel {
 // MARK: - Cached ManagedObjectModels
 
 private let lock = NSLock()
-private var map = [ Set<ObjectIdentifier> : NSManagedObjectModel ]()
-private let sharedBuilder = SchemaBuilder()
+nonisolated(unsafe) private var map = [ Set<ObjectIdentifier> : NSManagedObjectModel ]()
+nonisolated(unsafe) private let sharedBuilder = SchemaBuilder()
 
 public extension NSManagedObjectModel {
   
