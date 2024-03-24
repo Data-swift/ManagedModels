@@ -7,9 +7,9 @@ import CoreData
 
 public extension NSRelationshipDescription {
   
-  struct Option: Equatable {
+  struct Option: Equatable, Sendable {
     
-    enum Value {
+    enum Value: Sendable {
       case unique
     }
     let value : Value

@@ -2,6 +2,12 @@
 import PackageDescription
 import CompilerPluginSupport
 
+#if swift(>=5.10)
+let settings = [ .enableExperimentalFeature("StrictConcurrency") ]
+#else
+let settings = [ SwiftSetting ]()
+#endif
+
 let package = Package(
   name: "ManagedModels",
   
@@ -13,8 +19,12 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0")
   ],
   targets: [
-    .target(name: "ManagedModels", dependencies: [ "ManagedModelMacros" ]),
-  
+    .target(
+      name: "ManagedModels",
+      dependencies: [ "ManagedModelMacros" ],
+      swiftSettings: settings
+    ),
+
     .macro(
       name: "ManagedModelMacros",
       dependencies: [

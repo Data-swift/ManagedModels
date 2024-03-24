@@ -7,7 +7,7 @@ import class Foundation.ValueTransformer
 
 extension NSAttributeDescription {
   
-  public struct Option: Equatable {
+  public struct Option: Equatable, Sendable {
     
     let value : Value
     
@@ -39,7 +39,7 @@ extension NSAttributeDescription {
 
 extension NSAttributeDescription.Option {
   
-  enum Value {
+  enum Value: Sendable {
     case unique, externalStorage, preserveValueOnDeletion, ephemeral, spotlight
     case transformableByType(ValueTransformer.Type)
     case transformableByName(String)

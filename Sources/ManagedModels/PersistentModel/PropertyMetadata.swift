@@ -13,7 +13,7 @@ public extension NSManagedObjectModel {
    * All (code defined) properties of the ``NSManagedObjectModel`` are stored
    * in the `schemaMetadata` static property.
    */
-  struct PropertyMetadata {
+	struct PropertyMetadata: @unchecked Sendable {
     
     /// The name of the property instance variable, e.g. `street`.
     public let name         : String
