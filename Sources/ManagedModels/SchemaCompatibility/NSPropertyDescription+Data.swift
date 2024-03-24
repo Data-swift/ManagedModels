@@ -12,11 +12,18 @@ extension NSPropertyDescription {
     // Note: isUnique is only used during schema construction!
     set {
       if newValue {
-        objc_setAssociatedObject(self, &AssociatedKeys.propertyIsUniqueAssociatedKey,
-                                 type(of: self), .OBJC_ASSOCIATION_ASSIGN)
+        objc_setAssociatedObject(
+          self, &AssociatedKeys.propertyIsUniqueAssociatedKey,
+          type(of: self), // Just used as a flag, type won't go away
+          .OBJC_ASSOCIATION_ASSIGN
+        )
       }
       else {
-        objc_setAssociatedObject(self, &AssociatedKeys.propertyIsUniqueAssociatedKey, nil, .OBJC_ASSOCIATION_RETAIN)
+        objc_setAssociatedObject(
+          self, &AssociatedKeys.propertyIsUniqueAssociatedKey, 
+          nil, // clear // clear flag
+          .OBJC_ASSOCIATION_ASSIGN
+        )
       }
 #if false // do we need this? The entity might not yet be setup?
       guard !entity.isPropertyUnique(self) else { return }
@@ -24,7 +31,10 @@ extension NSPropertyDescription {
 #endif
     }
     get {
-      objc_getAssociatedObject(self, &AssociatedKeys.propertyIsUniqueAssociatedKey) != nil
+      objc_getAssociatedObject(
+        self,
+        &AssociatedKeys.propertyIsUniqueAssociatedKey
+      ) != nil
       ? true
       : entity.isPropertyUnique(self)
     }

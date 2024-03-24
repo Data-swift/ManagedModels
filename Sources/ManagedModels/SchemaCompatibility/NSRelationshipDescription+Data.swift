@@ -141,7 +141,7 @@ public extension CoreData.NSRelationshipDescription {
         self.maxCount = 0
       }
       else if valueType is NSOrderedSet.Type ||
-                valueType is Optional<NSOrderedSet>.Type
+              valueType is Optional<NSOrderedSet>.Type
       {
         self.maxCount = 0
       }
@@ -205,9 +205,8 @@ extension CoreData.NSRelationshipDescription {
   }
   
   var writableRelationshipInfo : MacroInfo {
-    if let info =
-        objc_getAssociatedObject(self, &AssociatedKeys.relationshipInfoAssociatedKey)
-        as? MacroInfo
+    if let info = objc_getAssociatedObject(
+         self, &AssociatedKeys.relationshipInfoAssociatedKey) as? MacroInfo
     {
       return info
     }
@@ -220,12 +219,15 @@ extension CoreData.NSRelationshipDescription {
   var relationshipInfo: MacroInfo? {
     // Note: isUnique is only used during schema construction!
     set {
-      objc_setAssociatedObject(self, &AssociatedKeys.relationshipInfoAssociatedKey,
-                               newValue, .OBJC_ASSOCIATION_RETAIN)
+      objc_setAssociatedObject(
+        self, &AssociatedKeys.relationshipInfoAssociatedKey,
+        newValue, .OBJC_ASSOCIATION_RETAIN
+      )
     }
     get {
-      objc_getAssociatedObject(self, &AssociatedKeys.relationshipInfoAssociatedKey)
-      as? MacroInfo
+      objc_getAssociatedObject(
+        self, &AssociatedKeys.relationshipInfoAssociatedKey
+      ) as? MacroInfo
     }
   }
 }
