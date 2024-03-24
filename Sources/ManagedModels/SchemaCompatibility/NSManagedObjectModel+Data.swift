@@ -37,8 +37,14 @@ public extension NSManagedObjectModel {
 // MARK: - Cached ManagedObjectModels
 
 private let lock = NSLock()
-nonisolated(unsafe) private var map = [ Set<ObjectIdentifier> : NSManagedObjectModel ]()
+#if swift(>=5.10)
+nonisolated(unsafe) 
+private var map = [ Set<ObjectIdentifier> : NSManagedObjectModel ]()
 nonisolated(unsafe) private let sharedBuilder = SchemaBuilder()
+#else // 5.9: nonisolated(unsafe) not available, nonisolated nor working on var
+private var map = [ Set<ObjectIdentifier> : NSManagedObjectModel ]()
+nonisolated private let sharedBuilder = SchemaBuilder()
+#endif
 
 public extension NSManagedObjectModel {
   

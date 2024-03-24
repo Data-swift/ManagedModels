@@ -5,7 +5,11 @@
 
 extension NSPropertyDescription {
   private struct AssociatedKeys {
+    #if swift(>=5.10)
     nonisolated(unsafe) static var propertyIsUniqueAssociatedKey: Void? = nil
+    #else // 5.9: nonisolated(unsafe) not available
+    static var propertyIsUniqueAssociatedKey: Void? = nil
+    #endif
   }
   
   public internal(set) var isUnique: Bool {
