@@ -3,7 +3,7 @@ import PackageDescription
 import CompilerPluginSupport
 
 #if swift(>=5.10)
-let settings = [ .enableExperimentalFeature("StrictConcurrency") ]
+let settings = [ SwiftSetting.enableExperimentalFeature("StrictConcurrency") ]
 #else
 let settings = [ SwiftSetting ]()
 #endif
