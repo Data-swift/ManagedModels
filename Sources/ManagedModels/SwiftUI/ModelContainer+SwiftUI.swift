@@ -25,6 +25,7 @@ public extension View {
     self.modelContext(container.viewContext)
   }
 
+  @MainActor
   @ViewBuilder
   func modelContainer(
     for    modelTypes : [ any PersistentModel.Type ],
@@ -48,6 +49,7 @@ public extension View {
     }
   }
   
+  @MainActor
   @inlinable
   func modelContainer(
     for     modelType : any PersistentModel.Type,
@@ -73,6 +75,7 @@ public extension Scene {
     self.modelContext(container.viewContext)
   }
   
+  @MainActor
   @SceneBuilder
   func modelContainer(
     for    modelTypes : [ any PersistentModel.Type ],
@@ -92,6 +95,7 @@ public extension Scene {
     self.modelContainer(try! result.get())
   }
   
+  @MainActor
   @inlinable
   func modelContainer(
     for     modelType : any PersistentModel.Type,
@@ -113,8 +117,10 @@ public extension Scene {
 // MARK: - Primitive
 
 // Note: The docs say that a container is only ever created once! So cache it.
+@MainActor
 private var modelToContainer = [ ObjectIdentifier: NSPersistentContainer ]()
 
+@MainActor
 private func makeModelContainer(
   for    modelTypes : [ any PersistentModel.Type ],
   inMemory          : Bool = false,

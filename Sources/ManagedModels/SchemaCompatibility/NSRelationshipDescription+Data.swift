@@ -13,9 +13,9 @@ extension CoreData.NSRelationshipDescription {
 extension CoreData.NSRelationshipDescription: SchemaProperty {}
 
 public extension CoreData.NSRelationshipDescription {
-
+  
   @inlinable var isToOneRelationship : Bool { !isToMany }
-
+  
   @inlinable var isAttribute    : Bool { return false }
   @inlinable var isRelationship : Bool { return true  }
   
@@ -109,7 +109,7 @@ extension CoreData.NSRelationshipDescription {
 // MARK: - Initializer
 
 public extension CoreData.NSRelationshipDescription {
-
+  
   // Note: This matches what the `Relationship` macro takes.
   convenience init(_ options: Option..., deleteRule: NSDeleteRule = .nullify,
                    minimumModelCount: Int? = 0, maximumModelCount: Int? = 0,
@@ -122,16 +122,16 @@ public extension CoreData.NSRelationshipDescription {
     precondition(minimumModelCount ?? 0 >= 0)
     precondition(maximumModelCount ?? 0 >= 0)
     self.init()
-
+    
     self.name                = name ?? ""
     self.valueType           = valueType
     self.renamingIdentifier  = originalName ?? ""
     self.versionHashModifier = hashModifier
     self.deleteRule          = deleteRule
     self.inverseKeyPath      = inverse
-
+    
     if options.contains(.unique) { isUnique = true }
-
+    
     if let minimumModelCount { self.minCount = minimumModelCount }
     if let maximumModelCount {
       self.maxCount = maximumModelCount
@@ -140,7 +140,7 @@ public extension CoreData.NSRelationshipDescription {
       if valueType is any RelationshipCollection.Type {
         self.maxCount = 0
       }
-      else if valueType is NSOrderedSet.Type || 
+      else if valueType is NSOrderedSet.Type ||
               valueType is Optional<NSOrderedSet>.Type
       {
         self.maxCount = 0
@@ -155,10 +155,8 @@ public extension CoreData.NSRelationshipDescription {
 
 // MARK: - Storage
 
-private var _relationshipInfoAssociatedKey: UInt8 = 72
-
 extension CoreData.NSRelationshipDescription {
-
+  
   func internalCopy() -> Self {
     guard let copy = self.copy() as? Self else {
       fatalError("Could not copy relationship \(self)")
@@ -187,7 +185,7 @@ extension CoreData.NSRelationshipDescription {
     var inverseName         : String?
     var destination         : String?
     var isToOneRelationship : Bool?
-
+    
     override func copy() -> Any { internalCopy() }
     
     func internalCopy() -> MacroInfo {
@@ -201,11 +199,18 @@ extension CoreData.NSRelationshipDescription {
       return copy
     }
   }
-
+  
+  private struct AssociatedKeys {
+    #if swift(>=5.10)
+    nonisolated(unsafe) static var relationshipInfoAssociatedKey: Void? = nil
+    #else // 5.9: nonisolated(unsafe) not available
+    static var relationshipInfoAssociatedKey: Void? = nil
+    #endif
+  }
+  
   var writableRelationshipInfo : MacroInfo {
-    if let info =
-        objc_getAssociatedObject(self, &_relationshipInfoAssociatedKey)
-        as? MacroInfo
+    if let info = objc_getAssociatedObject(
+         self, &AssociatedKeys.relationshipInfoAssociatedKey) as? MacroInfo
     {
       return info
     }
@@ -214,16 +219,19 @@ extension CoreData.NSRelationshipDescription {
     self.relationshipInfo = info
     return info
   }
-
+  
   var relationshipInfo: MacroInfo? {
     // Note: isUnique is only used during schema construction!
     set {
-      objc_setAssociatedObject(self, &_relationshipInfoAssociatedKey,
-                               newValue, .OBJC_ASSOCIATION_RETAIN)
+      objc_setAssociatedObject(
+        self, &AssociatedKeys.relationshipInfoAssociatedKey,
+        newValue, .OBJC_ASSOCIATION_RETAIN
+      )
     }
     get {
-      objc_getAssociatedObject(self, &_relationshipInfoAssociatedKey)
-      as? MacroInfo
+      objc_getAssociatedObject(
+        self, &AssociatedKeys.relationshipInfoAssociatedKey
+      ) as? MacroInfo
     }
   }
 }

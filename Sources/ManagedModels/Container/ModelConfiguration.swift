@@ -3,9 +3,9 @@
 //  Copyright © 2023 ZeeZide GmbH.
 //
 
-import CoreData
+@preconcurrency import CoreData
 
-public struct ModelConfiguration: Hashable {
+public struct ModelConfiguration: Hashable, Sendable {
   // TBD: Some of those are `let` in SwiftData
 
   public var path                        : String
@@ -83,7 +83,7 @@ extension ModelConfiguration: Identifiable {
 
 public extension ModelConfiguration {
   
-  struct GroupContainer: Hashable {
+  struct GroupContainer: Hashable, Sendable {
     enum Value: Hashable {
       case automatic, none
       case identifier(String)
@@ -100,7 +100,7 @@ public extension ModelConfiguration {
 
 public extension ModelConfiguration {
   
-  struct CloudKitDatabase: Hashable {
+  struct CloudKitDatabase: Hashable, Sendable {
     enum Value: Hashable {
       case automatic, none
       case `private`(String)
