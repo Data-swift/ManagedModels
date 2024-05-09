@@ -20,6 +20,7 @@ extension Fixtures {
       var token   : String
       var expires : Date
       var sip     : AccessSIP
+      var optionalSip : AccessSIP?
     }
     
     struct AccessSIP: Codable {
