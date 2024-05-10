@@ -32,8 +32,8 @@ extension CoreData.NSAttributeDescription: SchemaProperty {
       if let baseType = attributeType.swiftBaseType(isOptional: isOptional) {
         return baseType
       }
-      guard let attributeValueClassName else { return Any.self }
-      return NSClassFromString(attributeValueClassName) ?? Any.self
+      guard let attributeValueClassName else { return isOptional ? Any?.self : Any.self }
+      return NSClassFromString(attributeValueClassName) ?? (isOptional ? Any?.self : Any.self)
     }
     set {
       // Note: This needs to match up w/ PersistentModel+KVC.
