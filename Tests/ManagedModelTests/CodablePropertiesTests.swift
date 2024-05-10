@@ -69,4 +69,28 @@ final class CodablePropertiesTests: XCTestCase {
     XCTAssertNotNil(attribute.valueTransformerName)
     XCTAssertEqual(attribute.valueTransformerName, transformerName.rawValue)
   }
+  
+  func testOptionalCodablePropertyEntity() throws {
+      let entity = try XCTUnwrap(
+          container?.managedObjectModel.entitiesByName["StoredAccess"]
+      )
+      
+      // Creating the entity should have registered the transformer for the
+      // CodableBox.
+      let transformerName = try XCTUnwrap(
+        ValueTransformer.valueTransformerNames().first(where: {
+            $0.rawValue.range(of: "CodableTransformerGSqVOO17ManagedModelTests8")
+            != nil
+        })
+      )
+      let transformer = try XCTUnwrap(ValueTransformer(forName: transformerName))
+      _ = transformer // to clear unused-wraning
+      
+      let attribute = try XCTUnwrap(entity.attributesByName["optionalSip"])
+      XCTAssertEqual(attribute.name, "optionalSip")
+      XCTAssertTrue(attribute.valueType == Any?.self)
+      // Fixtures.CodablePropertiesSchema.AccessSIP?.self)
+      XCTAssertNotNil(attribute.valueTransformerName)
+      XCTAssertEqual(attribute.valueTransformerName, transformerName.rawValue)
+  }
 }
