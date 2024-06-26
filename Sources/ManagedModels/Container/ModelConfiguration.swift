@@ -1,6 +1,6 @@
 //
 //  Created by Helge Heß.
-//  Copyright © 2023 ZeeZide GmbH.
+//  Copyright © 2023-2024 ZeeZide GmbH.
 //
 
 @preconcurrency import CoreData
@@ -141,6 +141,10 @@ public extension ModelConfiguration {
               cloudKitDatabase: cloudKitDatabase)
   }
   
+  @inlinable
+  init(isStoredInMemoryOnly: Bool) {
+    self.init(schema: nil, isStoredInMemoryOnly: isStoredInMemoryOnly)
+  }
   @inlinable
   init(for forTypes: any PersistentModel.Type...,
        isStoredInMemoryOnly: Bool = false)
