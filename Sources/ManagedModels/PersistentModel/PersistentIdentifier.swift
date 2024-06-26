@@ -1,21 +1,27 @@
 //
 //  Created by Helge Heß.
-//  Copyright © 2023 ZeeZide GmbH.
+//  Copyright © 2023-2024 ZeeZide GmbH.
 //
 
 import CoreData
 
 public typealias PersistentIdentifier = NSManagedObjectID
 
-extension NSManagedObjectID: Identifiable {
-  
+#if compiler(>=6)
+extension NSManagedObjectID: @retroactive Identifiable, @retroactive Encodable {
+}
+#else
+extension NSManagedObjectID: Identifiable, Encodable {}
+#endif
+
+extension NSManagedObjectID {
   public typealias ID = NSManagedObjectID
   
   @inlinable
   public var id: Self { self }
 }
 
-extension NSManagedObjectID: Encodable {
+extension NSManagedObjectID {
   
   @inlinable
   public func encode(to encoder: Encoder) throws {
