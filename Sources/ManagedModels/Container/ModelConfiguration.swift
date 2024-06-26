@@ -1,6 +1,6 @@
 //
 //  Created by Helge Heß.
-//  Copyright © 2023 ZeeZide GmbH.
+//  Copyright © 2023-2024 ZeeZide GmbH.
 //
 
 @preconcurrency import CoreData
@@ -117,11 +117,13 @@ public extension ModelConfiguration {
 
 public extension ModelConfiguration {
   
+  @inlinable
   var url : URL {
     set { path = newValue.path }
     get { URL(fileURLWithPath: path) }
   }
 
+  @inlinable
   init(_ name: String? = nil, schema: Schema? = nil, url: URL,
        isStoredInMemoryOnly: Bool = false, allowsSave: Bool = true,
        groupAppContainerIdentifier: String? = nil,
@@ -137,6 +139,18 @@ public extension ModelConfiguration {
               cloudKitContainerIdentifier: cloudKitContainerIdentifier,
               groupContainer: groupContainer,
               cloudKitDatabase: cloudKitDatabase)
+  }
+  
+  @inlinable
+  init(isStoredInMemoryOnly: Bool) {
+    self.init(schema: nil, isStoredInMemoryOnly: isStoredInMemoryOnly)
+  }
+  @inlinable
+  init(for forTypes: any PersistentModel.Type...,
+       isStoredInMemoryOnly: Bool = false)
+  {
+    let model = NSManagedObjectModel(forTypes)
+    self.init(schema: model, isStoredInMemoryOnly: isStoredInMemoryOnly)
   }
 }
 
