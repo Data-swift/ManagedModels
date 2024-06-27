@@ -1,6 +1,6 @@
 //
 //  Created by Helge Heß.
-//  Copyright © 2023 ZeeZide GmbH.
+//  Copyright © 2023-2024 ZeeZide GmbH.
 //
 
 import CoreData
@@ -36,7 +36,7 @@ public extension NSManagedObjectModel {
 
 // MARK: - Cached ManagedObjectModels
 
-private let lock = NSLock()
+private let lock = NSLock() // TODO: Use new UnfairLock if available
 #if swift(>=5.10)
 nonisolated(unsafe) 
 private var map = [ Set<ObjectIdentifier> : NSManagedObjectModel ]()
@@ -48,14 +48,31 @@ nonisolated private let sharedBuilder = SchemaBuilder()
 
 public extension NSManagedObjectModel {
   
-  /// A cached version of the initializer.
-  static func model(for versionedSchema: VersionedSchema.Type) 
+  /**
+   * This caches a model for the types in the given `VersionedSchema`.
+   * I.e. it will return the same `NSManagedObjectModel` when given the same
+   * types.
+   *
+   * - Parameters:
+   *   - versionedSchema: The versioned schema to derive the model from.
+   * - Returns:           A `NSManagedObjectModel` representing the schema.
+   */
+  @inlinable
+  static func model(for versionedSchema: VersionedSchema.Type)
               -> NSManagedObjectModel
   {
     model(for: versionedSchema.models)
   }
 
-  /// A cached version of the initializer.
+  /**
+   * This caches a model for the types passed in.
+   * I.e. it will return the same `NSManagedObjectModel` when given the same
+   * types.
+   *
+   * - Parameters:
+   *   - types: A set of `PersistentModel` types, e.g. `[Person.self]`.
+   * - Returns: A `NSManagedObjectModel` representing the types.
+   */
   static func model(for types: [ any PersistentModel.Type ])
               -> NSManagedObjectModel
   {

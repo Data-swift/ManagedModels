@@ -1,6 +1,6 @@
 //
 //  Created by Helge Heß.
-//  Copyright © 2023 ZeeZide GmbH.
+//  Copyright © 2023-2024 ZeeZide GmbH.
 //
 
 import CoreData
@@ -27,9 +27,21 @@ extension NSPersistentContainer {
     precondition(migrationPlan == nil, "Migration plans not yet supported")
     
     let combinedModel : NSManagedObjectModel = {
-      let allModels = [ model ] + configurations.compactMap { $0.schema }
+      guard let firstConfig = configurations.first else { return model }
+      if configurations.count == 1,
+         firstConfig.schema == nil || firstConfig.schema == model
+      {
+        return model
+      }
+      
+      var allModels = [ ObjectIdentifier : NSManagedObjectModel ]()
+      allModels[ObjectIdentifier(model)] = model
+      for config in configurations {
+        guard let model = config.schema else { continue }
+        allModels[ObjectIdentifier(model)] = model
+      }
       guard allModels.count > 1 else { return model }
-      let merged = NSManagedObjectModel(byMerging: allModels)
+      let merged = NSManagedObjectModel(byMerging: Array(allModels.values))
       assert(merged != nil, "Could not combine object models: \(allModels)")
       return merged ?? model
     }()
@@ -84,6 +96,7 @@ extension NSPersistentContainer {
 
 public extension NSPersistentContainer {
   
+  @inlinable
   convenience init(for     model  : NSManagedObjectModel,
                    migrationPlan  : SchemaMigrationPlan.Type? = nil,
                    configurations : ModelConfiguration...) throws
@@ -92,6 +105,7 @@ public extension NSPersistentContainer {
                   configurations: configurations)
   }
 
+  @inlinable
   convenience init(for      types : any PersistentModel.Type...,
                    migrationPlan  : SchemaMigrationPlan.Type? = nil,
                    configurations : ModelConfiguration...) throws
