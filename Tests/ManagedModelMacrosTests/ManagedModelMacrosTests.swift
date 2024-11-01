@@ -387,11 +387,19 @@ final class ModelMacroTests: XCTestCase {
       ]
     )
     
+    #if canImport(SwiftSyntax600)
+    let explodedFile : Syntax = sourceFile.expand(
+      macros: macros,
+      contextGenerator: { _ in context },
+      indentationWidth: .spaces(2) // what else!
+    )
+    #else
     let explodedFile : Syntax = sourceFile.expand(
       macros: macros,
       in: context,
       indentationWidth: .spaces(2) // what else!
     )
+    #endif
     
     return explodedFile
   }
