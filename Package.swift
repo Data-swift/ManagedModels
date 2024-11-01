@@ -16,7 +16,8 @@ let package = Package(
     .library(name: "ManagedModels", targets: [ "ManagedModels" ])
   ],
   dependencies: [
-    .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0")
+    .package(url: "https://github.com/swiftlang/swift-syntax.git",
+             "509.0.0"..<"600.0.1")
   ],
   targets: [
     .target(
