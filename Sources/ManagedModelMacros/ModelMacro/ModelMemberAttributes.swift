@@ -29,6 +29,9 @@ extension ModelMacro: MemberAttributeMacro { // @attached(memberAttribute)
       return [] // TBD: rather throw?
     }
 
+    // This is an array because the `member` declaration can contain multiple
+    // bindings, e.g.: `var street, city, country : String`.
+    // Those are NOT all the properties of the `declaration` (e.g. the class).
     var properties = [ ModelProperty ]()
     addModelProperties(in: member, to: &properties,
                        context: context)
@@ -41,7 +44,20 @@ extension ModelMacro: MemberAttributeMacro { // @attached(memberAttribute)
     }
     
     guard !property.isTransient else { return [] }
+    
+    /*
+     // property.declaredValueType is nil, but we detect some
+     var firstname = "Jason"
+     // property.declaredValueType is set
+     var lastname  : String
+     */
+    let addAtObjC = property.isKnownRelationshipPropertyType
+                 || (property.valueType?.canBeRepresentedInObjectiveC ?? false)
 
-    return [ "@_PersistedProperty" ]
+    // We'd like @objc, but we don't know which ones to attach it to?
+    // https://github.com/Data-swift/ManagedModels/issues/36
+    return addAtObjC
+         ? [ "@_PersistedProperty", "@objc" ]
+         : [ "@_PersistedProperty" ]
   }
 }

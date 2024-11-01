@@ -121,7 +121,7 @@ final class ModelMacroTests: XCTestCase {
     
     let explodedSource = explodedFile.description
     XCTAssertTrue(explodedSource.contains(
-      "extension Person: ManagedModels.PersistentModel"))
+      "extension MySchema.Person: ManagedModels.PersistentModel"))
     XCTAssertTrue (explodedSource.contains("static let x = 10"))
     XCTAssertFalse(explodedSource.contains("@NSManaged"))
     XCTAssertTrue (explodedSource.contains("static let schemaMetadata"))
@@ -131,6 +131,14 @@ final class ModelMacroTests: XCTestCase {
       """
     ))
     
+    XCTAssertTrue(explodedSource.contains(try Regex(
+      #"var(\s+)addresses(\s+):(\s+)\[(\s+)Address(\s+)\]"#
+    )))
+    XCTAssertTrue(explodedSource.contains(
+      #"setValue(forKey: "addresses", to: newValue)"#))
+    XCTAssertTrue(explodedSource.contains(#"getValue(forKey: "addresses")"#))
+
+
 #if false
     print("Exploded:---\n")
     print(explodedSource)
@@ -386,11 +394,19 @@ final class ModelMacroTests: XCTestCase {
       ]
     )
     
+    #if canImport(SwiftSyntax600)
+    let explodedFile : Syntax = sourceFile.expand(
+      macros: macros,
+      contextGenerator: { _ in context },
+      indentationWidth: .spaces(2) // what else!
+    )
+    #else
     let explodedFile : Syntax = sourceFile.expand(
       macros: macros,
       in: context,
       indentationWidth: .spaces(2) // what else!
     )
+    #endif
     
     return explodedFile
   }

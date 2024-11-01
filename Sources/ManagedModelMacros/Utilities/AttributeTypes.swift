@@ -48,7 +48,38 @@ private let toManyRelationshipTypes : Set<String> = [
 ]
 
 extension TypeSyntax {
+
+  /// Whether the type can be represented in Objective-C.
+  /// A *very* basic implementation.
+  var canBeRepresentedInObjectiveC : Bool {
+    // TODO: Naive shortcut
+    if let id = self.as(IdentifierTypeSyntax.self) {
+      return id.isKnownAttributePropertyType
+          || id.isKnownRelationshipPropertyType
+    }
+    
+    if let opt = self.as(OptionalTypeSyntax.self) {
+      if let id = opt.wrappedType.as(IdentifierTypeSyntax.self) {
+        return id.isKnownAttributePropertyType
+            || id.isKnownRelationshipPropertyType
+      }
+      // E.g. this is not representable: `String??`, this is `String?`.
+      // I.e. nesting of Optional's are not representable.
+      return false
+    }
+    if let array = self.as(ArrayTypeSyntax.self) {
+      // This *is* representable: `[String]`,
+      // even this `[ [ 10, 20 ], [ 30, 40 ] ]`
+      return array.element.canBeRepresentedInObjectiveC
+    }
+
+    return false
+  }
   
+  /**
+   * This checks for some known basetypes, like `Int`, `String` or `Data`.
+   * It also unwraps optionals, arrays and such.
+   */
   var isKnownAttributePropertyType : Bool {
     if let id = self.as(IdentifierTypeSyntax.self) {
       return id.isKnownAttributePropertyType
