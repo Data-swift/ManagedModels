@@ -120,8 +120,9 @@ final class ModelMacroTests: XCTestCase {
     XCTAssertTrue(diags.isEmpty)
     
     let explodedSource = explodedFile.description
+    print("S:", explodedSource)
     XCTAssertTrue(explodedSource.contains(
-      "extension Person: ManagedModels.PersistentModel"))
+      "extension MySchema.Person: ManagedModels.PersistentModel"))
     XCTAssertTrue (explodedSource.contains("static let x = 10"))
     XCTAssertFalse(explodedSource.contains("@NSManaged"))
     XCTAssertTrue (explodedSource.contains("static let schemaMetadata"))
