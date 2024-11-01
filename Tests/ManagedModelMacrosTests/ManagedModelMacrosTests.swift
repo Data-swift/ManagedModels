@@ -120,7 +120,6 @@ final class ModelMacroTests: XCTestCase {
     XCTAssertTrue(diags.isEmpty)
     
     let explodedSource = explodedFile.description
-    print("S:", explodedSource)
     XCTAssertTrue(explodedSource.contains(
       "extension MySchema.Person: ManagedModels.PersistentModel"))
     XCTAssertTrue (explodedSource.contains("static let x = 10"))
@@ -132,6 +131,14 @@ final class ModelMacroTests: XCTestCase {
       """
     ))
     
+    XCTAssertTrue(explodedSource.contains(try Regex(
+      #"var(\s+)addresses(\s+):(\s+)\[(\s+)Address(\s+)\]"#
+    )))
+    XCTAssertTrue(explodedSource.contains(
+      #"setValue(forKey: "addresses", to: newValue)"#))
+    XCTAssertTrue(explodedSource.contains(#"getValue(forKey: "addresses")"#))
+
+
 #if false
     print("Exploded:---\n")
     print(explodedSource)
