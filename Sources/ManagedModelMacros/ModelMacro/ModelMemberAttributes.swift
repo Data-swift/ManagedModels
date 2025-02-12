@@ -51,7 +51,13 @@ extension ModelMacro: MemberAttributeMacro { // @attached(memberAttribute)
      // property.declaredValueType is set
      var lastname  : String
      */
-    let addAtObjC = property.isKnownRelationshipPropertyType
+    let isRelationship: Bool
+    if case .relationship(_) = property.type {
+      isRelationship = true
+    } else {
+      isRelationship = false
+    }
+    let addAtObjC = isRelationship
                  || (property.valueType?.canBeRepresentedInObjectiveC ?? false)
 
     // We'd like @objc, but we don't know which ones to attach it to?
