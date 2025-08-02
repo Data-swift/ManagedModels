@@ -1,6 +1,6 @@
 //
 //  Created by Helge Heß.
-//  Copyright © 2023 ZeeZide GmbH.
+//  Copyright © 2023-2025 ZeeZide GmbH.
 //
 
 import SwiftSyntax
@@ -8,7 +8,7 @@ import SwiftSyntax
 // This is a little fishy as the user might shadow those types,
 // but I suppose an acceptable tradeoff.
 
-private let attributeTypes : Set<String> = [
+private let swiftTypes: Set<String> = [
   // Swift
   "String",
   "Int",  "Int8",  "Int16",  "Int32",  "Int64",
@@ -20,7 +20,8 @@ private let attributeTypes : Set<String> = [
   "Swift.UInt",  "Swift.UInt8", "Swift.UInt16", "Swift.UInt32", "Swift.UInt64",
   "Swift.Float", "Swift.Double",
   "Swift.Bool",
-
+]
+private let foundationTypes: Set<String> = [
   // Foundation
   "Data",      "Foundation.Data",
   "Date",      "Foundation.Date",
@@ -33,6 +34,7 @@ private let attributeTypes : Set<String> = [
   "NSURL",     "Foundation.NSURL",
   "NSData",    "Foundation.NSData"
 ]
+private let attributeTypes : Set<String> = swiftTypes.union(foundationTypes)
 
 private let toOneRelationshipTypes : Set<String> = [
   // CoreData
@@ -42,6 +44,8 @@ private let toOneRelationshipTypes : Set<String> = [
 ]
 private let toManyRelationshipTypes : Set<String> = [
   // Foundation
+  "Array",        "Foundation.Array",
+  "NSArray",      "Foundation.NSArray",
   "Set",          "Foundation.Set",
   "NSSet",        "Foundation.NSSet",
   "NSOrderedSet", "Foundation.NSOrderedSet"
@@ -52,28 +56,45 @@ extension TypeSyntax {
   /// Whether the type can be represented in Objective-C.
   /// A *very* basic implementation.
   var canBeRepresentedInObjectiveC : Bool {
-    // TODO: Naive shortcut
-    if let id = self.as(IdentifierTypeSyntax.self) {
-      return id.isKnownAttributePropertyType
-          || id.isKnownRelationshipPropertyType
-    }
-    
     if let opt = self.as(OptionalTypeSyntax.self) {
+      if let array = opt.wrappedType.as(ArrayTypeSyntax.self) {
+        return array.element.canBeRepresentedInObjectiveC
+      }
       if let id = opt.wrappedType.as(IdentifierTypeSyntax.self) {
-        return id.isKnownAttributePropertyType
-            || id.isKnownRelationshipPropertyType
+        if id.isKnownRelationshipPropertyType {
+          guard let argument = id.genericArgumentClause?.arguments.first,
+                case .type(let typeSyntax) = argument.argument else
+          {
+            return false
+          }
+          return typeSyntax.isKnownAttributePropertyType
+        }
+        return id.isKnownFoundationPropertyType
       }
       // E.g. this is not representable: `String??`, this is `String?`.
-      // I.e. nesting of Optional's are not representable.
+      // But Double? or Int? is not representable
+      // I.e. nestings of Optional's are not representable.
       return false
     }
+    
     if let array = self.as(ArrayTypeSyntax.self) {
       // This *is* representable: `[String]`,
       // even this `[ [ 10, 20 ], [ 30, 40 ] ]`
       return array.element.canBeRepresentedInObjectiveC
     }
-
-    return false
+      
+    if let id = self.as(IdentifierTypeSyntax.self),
+       id.isKnownFoundationGenericPropertyType
+    {
+      guard let arg = id.genericArgumentClause?.arguments.first,
+            case .type(let typeSyntax) = arg.argument else
+      {
+        return false
+      }
+      return typeSyntax.isKnownAttributePropertyType
+    }
+    
+    return self.isKnownAttributePropertyType
   }
   
   /**
@@ -132,12 +153,31 @@ extension IdentifierTypeSyntax {
     
     switch name {
       case "Array", "Optional", "Set":
-        return genericArgument.argument.isKnownAttributePropertyType
+        guard case .type(let typeSyntax) = genericArgument.argument else {
+          return false
+        }
+        return typeSyntax.isKnownAttributePropertyType
       default:
         return false
     }
   }
+    
+  var isKnownFoundationPropertyType: Bool {
+    let name = name.trimmed.text
+    return foundationTypes.contains(name)
+  }
 
+  var isKnownFoundationGenericPropertyType: Bool {
+    let name = name.trimmed.text
+    guard toManyRelationshipTypes.contains(name) else {
+      return false
+    }
+    if let generic = genericArgumentClause {
+      return generic.arguments.count == 1
+    }
+    return false
+  }
+    
   var isKnownRelationshipPropertyType : Bool {
     isKnownRelationshipPropertyType(checkOptional: true)
   }
@@ -148,12 +188,12 @@ extension IdentifierTypeSyntax {
     if name == "Optional" { // recurse
       guard let generic = genericArgumentClause,
             let genericArgument = generic.arguments.first,
-            generic.arguments.count != 1 else
+            generic.arguments.count != 1,
+            case .type(let typeSyntax) = genericArgument.argument else
       {
         return false
       }
-      return genericArgument.argument
-        .isKnownRelationshipPropertyType(checkOptional: false)
+      return typeSyntax.isKnownRelationshipPropertyType(checkOptional: false)
     }
     
     if toOneRelationshipTypes.contains(name) {
