@@ -1,6 +1,6 @@
 //
 //  Created by Helge Heß.
-//  Copyright © 2023 ZeeZide GmbH.
+//  Copyright © 2023-2025 ZeeZide GmbH.
 //
 
 import SwiftSyntax
@@ -62,14 +62,18 @@ extension TypeSyntax {
       }
       if let id = opt.wrappedType.as(IdentifierTypeSyntax.self) {
         if id.isKnownRelationshipPropertyType {
-          let element = id.genericArgumentClause?.arguments.first?.argument
-          return element?.isKnownAttributePropertyType ?? false
+          guard let argument = id.genericArgumentClause?.arguments.first,
+                case .type(let typeSyntax) = argument.argument else
+          {
+            return false
+          }
+          return typeSyntax.isKnownAttributePropertyType
         }
         return id.isKnownFoundationPropertyType
       }
       // E.g. this is not representable: `String??`, this is `String?`.
       // But Double? or Int? is not representable
-      // I.e. nesting of Optional's are not representable.
+      // I.e. nestings of Optional's are not representable.
       return false
     }
     
@@ -80,11 +84,16 @@ extension TypeSyntax {
     }
       
     if let id = self.as(IdentifierTypeSyntax.self),
-       id.isKnownFoundationGenericPropertyType {
-      let arg = id.genericArgumentClause?.arguments.first?.argument
-        return arg?.isKnownAttributePropertyType ?? false
+       id.isKnownFoundationGenericPropertyType
+    {
+      guard let arg = id.genericArgumentClause?.arguments.first,
+            case .type(let typeSyntax) = arg.argument else
+      {
+        return false
+      }
+      return typeSyntax.isKnownAttributePropertyType
     }
-        
+    
     return self.isKnownAttributePropertyType
   }
   
@@ -144,7 +153,10 @@ extension IdentifierTypeSyntax {
     
     switch name {
       case "Array", "Optional", "Set":
-        return genericArgument.argument.isKnownAttributePropertyType
+        guard case .type(let typeSyntax) = genericArgument.argument else {
+          return false
+        }
+        return typeSyntax.isKnownAttributePropertyType
       default:
         return false
     }
@@ -176,12 +188,12 @@ extension IdentifierTypeSyntax {
     if name == "Optional" { // recurse
       guard let generic = genericArgumentClause,
             let genericArgument = generic.arguments.first,
-            generic.arguments.count != 1 else
+            generic.arguments.count != 1,
+            case .type(let typeSyntax) = genericArgument.argument else
       {
         return false
       }
-      return genericArgument.argument
-        .isKnownRelationshipPropertyType(checkOptional: false)
+      return typeSyntax.isKnownRelationshipPropertyType(checkOptional: false)
     }
     
     if toOneRelationshipTypes.contains(name) {

@@ -1,6 +1,6 @@
 //
 //  Created by Helge Heß.
-//  Copyright © 2023 ZeeZide GmbH.
+//  Copyright © 2023-2025 ZeeZide GmbH.
 //
 
 import SwiftCompilerPlugin
@@ -24,6 +24,7 @@ extension ModelMacro: MemberMacro { // @attached(member, names:...)
   public static func expansion(
     of                   macroNode : AttributeSyntax,
     providingMembersOf declaration : some DeclGroupSyntax,
+    conformingTo         protocols : [ TypeSyntax ],
     in                     context : some MacroExpansionContext
   ) throws -> [ DeclSyntax ]
   {
