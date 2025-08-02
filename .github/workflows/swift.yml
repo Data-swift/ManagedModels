@@ -45,8 +45,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
       - name: Build Swift Debug Package
-        run: swift build -c debug
+        run: swift build --enable-experimental-prebuilts -c debug
       - name: Build Swift Release Package
-        run: swift build -c release
+        run: swift build --enable-experimental-prebuilts -c release
       - name: Run Tests
         run: swift test
