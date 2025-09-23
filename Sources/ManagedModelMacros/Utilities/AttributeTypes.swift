@@ -44,9 +44,9 @@ private let toOneRelationshipTypes : Set<String> = [
 ]
 private let toManyRelationshipTypes : Set<String> = [
   // Foundation
-  "Array",        "Foundation.Array",
+  "Array",        "Swift.Array", "Foundation.Array",
   "NSArray",      "Foundation.NSArray",
-  "Set",          "Foundation.Set",
+  "Set",          "Swift.Set",   "Foundation.Set",
   "NSSet",        "Foundation.NSSet",
   "NSOrderedSet", "Foundation.NSOrderedSet"
 ]
