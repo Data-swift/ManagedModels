@@ -73,7 +73,7 @@ final class ModelMacroTests: XCTestCase {
     ))
     XCTAssertFalse(explodedSource.contains(
       """
-      metadata: CoreData.NSAttributeDescription(.external, originalName: "First", name: "firstname", valueType: Swift.String.self, defaultValue: nil))
+      metadata: CoreData.NSAttributeDescription(.externalStorage, originalName: "First", name: "firstname", valueType: Swift.String.self, defaultValue: nil))
       """
     ))
     
@@ -98,7 +98,7 @@ final class ModelMacroTests: XCTestCase {
         static let x = 10
         static var y = 20
         
-        @Attribute(.external, originalName: "First")
+        @Attribute(.externalStorage, originalName: "First")
         var firstname = "Jason"
         var lastname  : String
         var addresses : [ Address ] = []
@@ -127,7 +127,7 @@ final class ModelMacroTests: XCTestCase {
     XCTAssertTrue (explodedSource.contains("static let schemaMetadata"))
     XCTAssertTrue (explodedSource.contains(
       """
-      metadata: CoreData.NSAttributeDescription(.external, originalName: "First", name: "firstname", valueType: Swift.String.self))
+      metadata: CoreData.NSAttributeDescription(.externalStorage, originalName: "First", name: "firstname", valueType: Swift.String.self))
       """
     ))
     
